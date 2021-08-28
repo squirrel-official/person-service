@@ -1,11 +1,14 @@
 package com.squirrel.persons.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -19,10 +22,13 @@ import java.util.Random;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class WantedPersonService {
     public static final String CRIME_STOPPERS_VIC_WANTED_PERSONS_URL = "https://www.crimestoppersvic.com.au/help-solve-crime/wanted-persons/";
+    public static final String WANTED_CRIMINALS_DIRECTORY = "/usr/local/squirrel-ai/wanted-criminals/";
 
     public void refreshWantedPersons() throws IOException {
+        deleteAllFiles(WANTED_CRIMINALS_DIRECTORY);
         Set<String> picturesUrl = getAllPictures();
         Iterator<String> it = picturesUrl.iterator();
         while (it.hasNext()) {
@@ -31,8 +37,17 @@ public class WantedPersonService {
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
             connection.connect();
             try (InputStream in = connection.getInputStream()) {
-                Files.copy(in, Paths.get("/usr/local/squirrel-ai/wanted-criminals/" + new Random().nextInt() + ".png"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(in, Paths.get(WANTED_CRIMINALS_DIRECTORY + new Random().nextInt() + ".png"), StandardCopyOption.REPLACE_EXISTING);
             }
+        }
+    }
+
+    private void deleteAllFiles(String wantedCriminalsDirectory) throws IOException {
+        try {
+            FileUtils.cleanDirectory(new File(wantedCriminalsDirectory));
+        } catch (IOException e) {
+            log.error("Unable to delete ", e);
+            throw e;
         }
     }
 
