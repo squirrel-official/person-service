@@ -31,13 +31,15 @@ public class WantedPersonService {
         deleteAllFiles(WANTED_CRIMINALS_DIRECTORY);
         Set<String> picturesUrl = getAllPictures();
         Iterator<String> it = picturesUrl.iterator();
+        int i = 0;
         while (it.hasNext()) {
             String url = it.next();
+            i++;
             URLConnection connection = new URL(url).openConnection();
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
             connection.connect();
             try (InputStream in = connection.getInputStream()) {
-                Files.copy(in, Paths.get(WANTED_CRIMINALS_DIRECTORY + new Random().nextInt() + ".png"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(in, Paths.get(WANTED_CRIMINALS_DIRECTORY + i + ".png"), StandardCopyOption.REPLACE_EXISTING);
             }
         }
     }
