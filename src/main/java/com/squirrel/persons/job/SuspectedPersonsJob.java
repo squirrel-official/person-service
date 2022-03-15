@@ -21,7 +21,7 @@ public class SuspectedPersonsJob {
         this.emailService = emailService;
     }
 
-    @Scheduled(fixedDelay = 1000000)
+    @Scheduled(fixedDelay = 300000)
     public void triggerJob() throws MessagingException, DocumentException, IOException {
         emailService.attachImagesAndSendEmail(toEmailAddress, "/usr/local/squirrel-ai/captured/");
     }
