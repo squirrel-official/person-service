@@ -3,6 +3,7 @@ package com.squirrel.persons.job;
 import com.itextpdf.text.DocumentException;
 import com.squirrel.persons.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,9 @@ import java.io.IOException;
 
 @Component
 public class VisitorsJob {
+    @Value("${mail.recipient}")
+    private String toEmailAddress;
+
     public final EmailService emailService;
 
     @Autowired
@@ -20,8 +24,7 @@ public class VisitorsJob {
 
     @Scheduled(cron = "*  *  19   *   *   *")
     public void triggerJob() throws MessagingException, DocumentException, IOException {
-        System.out.println("Test job");
-        emailService.attachImagesAndSendEmail("anil.kumar.ait09@gmail.com", "/usr/local/squirrel-ai/visitors/");
+        emailService.attachImagesAndSendEmail(toEmailAddress, "/usr/local/squirrel-ai/visitors/");
     }
 
 }
