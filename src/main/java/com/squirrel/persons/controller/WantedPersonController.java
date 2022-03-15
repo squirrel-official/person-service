@@ -10,7 +10,8 @@ import java.io.IOException;
 @RestController("/wanted")
 public class WantedPersonController {
 
-private  WantedPersonService wantedPersonService;
+    private WantedPersonService wantedPersonService;
+
     @Autowired
     public WantedPersonController(WantedPersonService wantedPersonService) {
         this.wantedPersonService = wantedPersonService;
@@ -20,8 +21,6 @@ private  WantedPersonService wantedPersonService;
     public void refreshWantedPersons() throws IOException {
         wantedPersonService.refreshWantedPersons();
     }
-
-
 
 
 }
