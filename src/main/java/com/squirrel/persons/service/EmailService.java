@@ -47,6 +47,27 @@ public class EmailService {
         }
     }
 
+    private static boolean checkNotHidden(Path eachFilePath) {
+        try {
+            return !Files.isHidden(eachFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static Image formatImages(Path file) {
+        Image image;
+        try {
+            image = Image.getInstance(file.toString());
+            image.scaleAbsolute(300, 300);
+            return image;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public void attachImagesAndSendEmail(String toEmail, String path) throws MessagingException, IOException, DocumentException {
         Set<Image> imageSet = getListOfFiles(path);
         if (!imageSet.isEmpty()) {
@@ -66,17 +87,8 @@ public class EmailService {
         Set<Image> images = Files.walk(Paths.get(path))
                 .filter(Files::isRegularFile)
                 .filter(EmailService::imageCheck)
-                .map(file -> {
-                    Image image;
-                    try {
-                        image = Image.getInstance(file.toString());
-                        image.scaleAbsolute(300, 300);
-                        return image;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }).filter(Objects::nonNull).collect(Collectors.toSet());
+                .filter(EmailService::checkNotHidden)
+                .map(EmailService::formatImages).filter(Objects::nonNull).collect(Collectors.toSet());
         return images;
     }
 
