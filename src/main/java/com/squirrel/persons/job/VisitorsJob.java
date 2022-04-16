@@ -23,7 +23,8 @@ public class VisitorsJob {
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "*  *  19   *   *   *")
+//    @Scheduled(cron = "*  *  19   *   *   *")
+    @Scheduled(fixedDelay = 300000)
     public void triggerJob() throws MessagingException, DocumentException, IOException {
         emailService.attachImagesAndSendEmail(toEmailAddress, "/usr/local/squirrel-ai/visitor/");
         FilesUtils.copyAllFiles("/usr/local/squirrel-ai/visitor/", "/usr/local/squirrel-ai/archives/visitor");
