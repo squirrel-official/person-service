@@ -30,6 +30,20 @@ public class WantedPersonController {
                 .filter(p -> p.info().commandLine().map(c -> c.contains("motionDetection.py")).orElse(false))
                 .findFirst()
                 .ifPresent(ProcessHandle::destroy);
+
+
+        Runtime.getRuntime().exec("sudo motion start");
     }
 
+    @PostMapping("/switch-to-detection")
+    public void switchToAdvancedMode() throws IOException {
+        ProcessHandle
+                .allProcesses()
+                .filter(p -> p.info().commandLine().map(c -> c.contains("sudo motion start")).orElse(false))
+                .findFirst()
+                .ifPresent(ProcessHandle::destroy);
+
+
+        Runtime.getRuntime().exec("nohup python3 /usr/local/squirrel-ai/service/motion.py & ");
+    }
 }
