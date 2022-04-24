@@ -23,4 +23,13 @@ public class WantedPersonController {
     }
 
 
+    @PostMapping("/switch-to-video")
+    public void switchToVideo() throws IOException {
+        ProcessHandle
+                .allProcesses()
+                .filter(p -> p.info().commandLine().map(c -> c.contains("motionDetection.py")).orElse(false))
+                .findFirst()
+                .ifPresent(ProcessHandle::destroy);
+    }
+
 }
