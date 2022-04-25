@@ -27,7 +27,7 @@ public class WantedPersonController {
     public boolean switchToVideo() throws IOException {
         ProcessHandle
                 .allProcesses()
-                .filter(p -> p.info().commandLine().map(c -> c.contains("motionDetection.py")).orElse(false))
+                .filter(p -> p.info().commandLine().map(c -> c.contains("detection.sh")).orElse(false))
                 .findFirst()
                 .ifPresent(ProcessHandle::destroy);
 
@@ -40,7 +40,7 @@ public class WantedPersonController {
     public boolean switchToAdvancedMode() throws IOException {
         ProcessHandle
                 .allProcesses()
-                .filter(p -> p.info().commandLine().map(c -> c.contains("sudo motion start")).orElse(false))
+                .filter(p -> p.info().commandLine().map(c -> c.contains("motion-start.sh")).orElse(false))
                 .findFirst()
                 .ifPresent(ProcessHandle::destroy);
 
