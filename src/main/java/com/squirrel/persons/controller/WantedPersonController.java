@@ -32,7 +32,7 @@ public class WantedPersonController {
                 .ifPresent(ProcessHandle::destroy);
 
 
-        Process process = Runtime.getRuntime().exec("sudo motion start");
+        Process process = Runtime.getRuntime().exec("/usr/local/person-service/src/main/resources/motion-start.sh");
         return process.info();
     }
 
@@ -45,7 +45,7 @@ public class WantedPersonController {
                 .ifPresent(ProcessHandle::destroy);
 
 
-        Process process = Runtime.getRuntime().exec("nohup python3 /usr/local/squirrel-ai/service/motion.py & ");
+        Process process = Runtime.getRuntime().exec("/usr/local/person-service/src/main/resources/detection.sh");
         return process.info();
     }
 }
