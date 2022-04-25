@@ -27,10 +27,9 @@ public class WantedPersonController {
     public boolean switchToVideo() throws IOException {
         ProcessHandle
                 .allProcesses()
-                .filter(p -> p.info().commandLine().map(c -> c.contains("detection.sh")).orElse(false))
-                .findFirst()
-                .ifPresent(ProcessHandle::destroy);
-
+                .filter(p -> p.info().commandLine().map(c -> c.contains("detection.sh") ||
+                        c.contains("python3 /usr/local/squirrel-ai/service/motion.py")).orElse(false))
+                .forEach(processHandle -> processHandle.destroy());
 
         Process process = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/motion-start.sh");
         return process.isAlive();
@@ -40,9 +39,9 @@ public class WantedPersonController {
     public boolean switchToAdvancedMode() throws IOException {
         ProcessHandle
                 .allProcesses()
-                .filter(p -> p.info().commandLine().map(c -> c.contains("motion-start.sh")).orElse(false))
-                .findFirst()
-                .ifPresent(ProcessHandle::destroy);
+                .filter(p -> p.info().commandLine().map(c -> c.contains("motion-start.sh") ||
+                        c.contains("sudo -u pi motion start") || c.contains("motion start")).orElse(false))
+                .forEach(processHandle -> processHandle.destroy());
 
         Process process = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/detection.sh");
         return process.isAlive();
