@@ -1,1 +1,1 @@
-sudo motion start
+sudo -u pi motion start
