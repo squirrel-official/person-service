@@ -1,3 +1,2 @@
-echo "starting the detection service"
-sudo -u pi nohup python3 /usr/local/squirrel-ai/service/motion.py &
-echo "finished starting the detection service"
+sudo -u pi /usr/bin/python3  /usr/local/squirrel-ai/service/motionDetection.py
+# touch /usr/local/squirrel-ai/end.txt  -- Inorder to test whether the process executed successfully or not.
