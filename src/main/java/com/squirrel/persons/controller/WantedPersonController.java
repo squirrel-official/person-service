@@ -28,7 +28,7 @@ public class WantedPersonController {
         ProcessHandle
                 .allProcesses()
                 .filter(p -> p.info().commandLine().map(c -> c.contains("detection.sh") ||
-                        c.contains("python3 /usr/local/squirrel-ai/service/motion.py")).orElse(false))
+                        c.contains("motionDetection.py")).orElse(false))
                 .forEach(processHandle -> processHandle.destroy());
 
         Process process = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/motion-start.sh");
