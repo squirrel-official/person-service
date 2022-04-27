@@ -14,7 +14,7 @@ import java.io.IOException;
 ))
 public class IntelligentSwitchController {
 
-    @PostMapping("/switch-to-video")
+    @PostMapping("/video")
     public boolean switchToVideo() throws IOException {
         ProcessHandle
                 .allProcesses()
@@ -26,7 +26,7 @@ public class IntelligentSwitchController {
         return process.isAlive();
     }
 
-    @PostMapping("/switch-to-detection")
+    @PostMapping("/intelligent-detection")
     public boolean switchToAdvancedMode() throws IOException {
         ProcessHandle
                 .allProcesses()

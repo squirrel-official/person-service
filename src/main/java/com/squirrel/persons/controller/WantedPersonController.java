@@ -3,8 +3,6 @@ package com.squirrel.persons.controller;
 import com.squirrel.persons.service.WantedPersonService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +23,7 @@ public class WantedPersonController {
         this.wantedPersonService = wantedPersonService;
     }
 
-    @PostMapping("/refresh")
+    @PostMapping("/update-from-smart-grid")
     public void refreshWantedPersons() throws IOException {
         wantedPersonService.refreshWantedPersons();
     }
