@@ -2,6 +2,8 @@ package com.squirrel.persons.controller;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,6 +16,8 @@ import java.io.IOException;
 ))
 public class IntelligentSwitchController {
 
+    private static final Logger LOGGER = LogManager.getLogger(IntelligentSwitchController.class);
+
     @PostMapping("/video")
     public boolean switchToVideo() throws IOException {
         ProcessHandle
@@ -23,6 +27,7 @@ public class IntelligentSwitchController {
                 .forEach(processHandle -> processHandle.destroy());
 
         Process process = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/motion-start.sh");
+        LOGGER.debug("Video process started {}", process);
         return process.isAlive();
     }
 
@@ -35,6 +40,7 @@ public class IntelligentSwitchController {
                 .forEach(processHandle -> processHandle.destroy());
 
         Process process = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/detection.sh");
+        LOGGER.debug("detection process started {}", process);
         return process.isAlive();
     }
 }
