@@ -3,6 +3,8 @@ package com.squirrel.persons.job;
 import com.itextpdf.text.DocumentException;
 import com.squirrel.persons.service.EmailService;
 import com.squirrel.persons.util.FilesUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,6 +20,8 @@ public class VisitorsJob {
 
     public final EmailService emailService;
 
+    private static final Logger LOGGER = LogManager.getLogger(VisitorsJob.class);
+
     @Autowired
     public VisitorsJob(EmailService emailService) {
         this.emailService = emailService;
@@ -26,6 +30,7 @@ public class VisitorsJob {
 //    @Scheduled(cron = "*  *  19   *   *   *")
     @Scheduled(fixedDelay = 300000)
     public void triggerJob() throws MessagingException, DocumentException, IOException {
+        LOGGER.info("Triggering visitor job");
         emailService.attachImagesAndSendEmail(toEmailAddress, "/usr/local/squirrel-ai/visitor/");
         FilesUtils.copyAllFiles("/usr/local/squirrel-ai/visitor/", "/usr/local/squirrel-ai/archives/visitor");
     }
