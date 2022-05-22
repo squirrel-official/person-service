@@ -45,6 +45,9 @@ public class EmailService {
             helper.setText("You had  following visitors today", true);
             helper.addAttachment(file.getName(), file);
             sender.send(message);
+            if(!file.delete()) {
+                file.deleteOnExit();
+            }
         }
     }
 
