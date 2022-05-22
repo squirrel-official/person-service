@@ -19,57 +19,22 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class EmailService {
 
     private JavaMailSender sender;
-    private static final Log logger = LogFactory.getLog(EmailService.class);
-
+    private static final Log LOGGER = LogFactory.getLog(EmailService.class);
+    private FileService fileService;
     @Autowired
-    protected EmailService(JavaMailSender sender) {
+    protected EmailService(JavaMailSender sender,FileService fileService) {
         this.sender = sender;
-    }
-
-    private static boolean imageCheck(Path file) {
-        try {
-            String mimetype = Files.probeContentType(file);
-            return mimetype != null && mimetype.split("/")[0].equals("image");
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private static boolean checkNotHidden(Path eachFilePath) {
-        try {
-            return !Files.isHidden(eachFilePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private static Image formatImages(Path file) {
-        Image image;
-        try {
-            image = Image.getInstance(file.toString());
-            image.scaleAbsolute(300, 300);
-            return image;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        this.fileService = fileService;
     }
 
     public void attachImagesAndSendEmail(String toEmail, String path) throws MessagingException, IOException, DocumentException {
-        Set<Image> imageSet = getListOfFiles(path);
+        Set<Image> imageSet = fileService.getListOfFiles(path);
         if (!imageSet.isEmpty()) {
             File file = createDocument(imageSet);
             MimeMessage message = sender.createMimeMessage();
@@ -82,17 +47,6 @@ public class EmailService {
             sender.send(message);
         }
     }
-
-    private Set<Image> getListOfFiles(String path) throws IOException {
-        Set<Image> images = Files.walk(Paths.get(path))
-                .filter(Files::isRegularFile)
-                .filter(EmailService::imageCheck)
-                .filter(EmailService::checkNotHidden)
-                .map(EmailService::formatImages).filter(Objects::nonNull).collect(Collectors.toSet());
-        return images;
-    }
-
-    ;
 
 
     private File createDocument(Set<Image> images) throws IOException, DocumentException {
