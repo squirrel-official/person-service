@@ -14,7 +14,7 @@ import java.io.IOException;
 @Component
 public class PurgeJob {
 
-    private static final Logger LOGGER = LogManager.getLogger(SuspectedPersonsJob.class);
+    private static final Logger LOGGER = LogManager.getLogger(PurgeJob.class);
 
     private FileService fileService;
 
@@ -25,10 +25,9 @@ public class PurgeJob {
 
     @Scheduled(fixedDelay = 600000)
     public void triggerJob() throws IOException {
-        LOGGER.info("Triggering captured job");
+        LOGGER.info("Purge job start");
         fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/archives/", 1);
-        FilesUtils.copyAllFiles("/usr/local/squirrel-ai/captured/", "/usr/local/squirrel-ai/archives/captured");
-
+        LOGGER.info("Purge job complete");
     }
 
 }

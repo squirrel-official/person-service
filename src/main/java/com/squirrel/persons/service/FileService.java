@@ -29,6 +29,7 @@ public class FileService {
     public void purgeFilesOlderThanNDays(String path, int days) throws IOException {
         Set<Path> paths = Files.walk(Paths.get(path))
                 .filter(Files::isRegularFile)
+                .filter(FileService::isNotImage)
                 .filter(FileService::checkNotHidden).filter(Objects::nonNull).collect(Collectors.toSet());
 
         for (Path eachPath : paths) {
@@ -41,6 +42,9 @@ public class FileService {
         }
     }
 
+    private static boolean isNotImage(Path file) {
+       return !imageCheck(file);
+    }
 
     private static boolean imageCheck(Path file) {
         try {
