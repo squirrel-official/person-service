@@ -55,7 +55,8 @@ public class EmailService {
     private File createDocument(Set<Image> images) throws IOException, DocumentException {
         final File outputFile = File.createTempFile("Squirrel-" + DateTime.now().toLocalTime(), ".pdf");
         Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(outputFile));
+        PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(outputFile));
+        pdfWriter.setFullCompression();
         document.open();
         for (Image eachImage : images) {
             document.add(eachImage);
