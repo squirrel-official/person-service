@@ -31,7 +31,8 @@ public class SuspectedPersonsJob {
     @Scheduled(fixedDelay = 300000)
     public void triggerJob() throws MessagingException, DocumentException, IOException {
         LOGGER.info("Triggering captured job");
-        emailService.attachImagesAndSendEmail(toEmailAddress, CAPTURED_CRIMINALS,"Suspected Criminal found");
+        emailService.attachImagesAndSendEmail(toEmailAddress, CAPTURED_CRIMINALS,"Suspected Criminal found",
+                "Following suspected criminal persons appears to be captured by your camera");
         FileUtils.copyAllFiles(CAPTURED_CRIMINALS, ARCHIVES_CAPTURED);
     }
 

@@ -33,7 +33,7 @@ public class EmailService {
         this.fileService = fileService;
     }
 
-    public void attachImagesAndSendEmail(String toEmail, String path, String emailMessage) throws MessagingException, IOException, DocumentException {
+    public void attachImagesAndSendEmail(String toEmail, String path, String emailMessage, String detailMessage) throws MessagingException, IOException, DocumentException {
         Set<Image> imageSet = fileService.getListOfFiles(path);
         if (!imageSet.isEmpty()) {
             File file = createDocument(imageSet);
