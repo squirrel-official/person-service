@@ -33,7 +33,7 @@ public class EmailService {
         this.fileService = fileService;
     }
 
-    public void attachImagesAndSendEmail(String toEmail, String path) throws MessagingException, IOException, DocumentException {
+    public void attachImagesAndSendEmail(String toEmail, String path, String emailMessage) throws MessagingException, IOException, DocumentException {
         Set<Image> imageSet = fileService.getListOfFiles(path);
         if (!imageSet.isEmpty()) {
             File file = createDocument(imageSet);
@@ -41,7 +41,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                     StandardCharsets.UTF_8.name());
             helper.setTo(toEmail);
-            helper.setSubject("Person of interest found");
+            helper.setSubject(emailMessage);
             helper.setText("You had  following visitors today", true);
             helper.addAttachment(file.getName(), file);
             sender.send(message);

@@ -31,8 +31,8 @@ public class VisitorsJob {
 
     @Scheduled(fixedDelay = 300000)
     public void triggerJob() throws MessagingException, DocumentException, IOException {
-        LOGGER.info("Triggering visitor job");
-        emailService.attachImagesAndSendEmail(toEmailAddress, VISITOR_PATH);
+        LOGGER.info("Triggering unknown job");
+        emailService.attachImagesAndSendEmail(toEmailAddress, VISITOR_PATH,"Unknown visitors");
         FileUtils.copyAllFiles(VISITOR_PATH, VISITOR_ARCHIVE_PATH);
         FileUtils.deleteImages(VISITOR_ARCHIVE_PATH);
     }
