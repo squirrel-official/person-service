@@ -42,7 +42,7 @@ public class EmailService {
                     StandardCharsets.UTF_8.name());
             helper.setTo(toEmail);
             helper.setSubject(emailMessage);
-            helper.setText("You had  following visitors today", true);
+            helper.setText(detailMessage, true);
             helper.addAttachment(file.getName(), file);
             sender.send(message);
             if(!file.delete()) {

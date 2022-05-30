@@ -27,6 +27,7 @@ public class PurgeJob {
         LOGGER.info("Purge job start");
         fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/data/archives/captured-criminals", 1);
         fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/data/archives/unknown-visitors", 1);
+        fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/data/archives/known-visitors", 1);
 
         LOGGER.info("Purge job complete");
     }
