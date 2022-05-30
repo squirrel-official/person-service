@@ -29,7 +29,7 @@ public class KnownVisitorsJob {
         this.emailService = emailService;
     }
 
-    @Scheduled(fixedDelay = 3600000)
+    @Scheduled(fixedDelay = 360000)
     public void triggerJob() throws MessagingException, DocumentException, IOException {
         LOGGER.info("Triggering known visitor job");
         emailService.attachImagesAndSendEmail(toEmailAddress, VISITOR_PATH,"Known visitors",
