@@ -2,7 +2,7 @@ package com.squirrel.persons.job;
 
 import com.itextpdf.text.DocumentException;
 import com.squirrel.persons.service.EmailService;
-import com.squirrel.persons.util.FilesUtils;
+import com.squirrel.persons.util.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,8 @@ import java.io.IOException;
 
 @Component
 public class VisitorsJob {
+    public static final String VISITOR_PATH = "/usr/local/squirrel-ai/result/unknown-visitors/";
+    public static final String VISITOR_ARCHIVE_PATH = "/usr/local/squirrel-ai/data/archives/unknown-visitors/";
     @Value("${mail.recipient}")
     private String toEmailAddress;
 
@@ -27,12 +29,12 @@ public class VisitorsJob {
         this.emailService = emailService;
     }
 
-//    @Scheduled(cron = "*  *  19   *   *   *")
     @Scheduled(fixedDelay = 300000)
     public void triggerJob() throws MessagingException, DocumentException, IOException {
         LOGGER.info("Triggering visitor job");
-        emailService.attachImagesAndSendEmail(toEmailAddress, "/usr/local/squirrel-ai/visitor/");
-        FilesUtils.copyAllFiles("/usr/local/squirrel-ai/visitor/", "/usr/local/squirrel-ai/archives/visitor");
+        emailService.attachImagesAndSendEmail(toEmailAddress, VISITOR_PATH);
+        FileUtils.copyAllFiles(VISITOR_PATH, VISITOR_ARCHIVE_PATH);
+        FileUtils.deleteImages(VISITOR_ARCHIVE_PATH);
     }
 
 }

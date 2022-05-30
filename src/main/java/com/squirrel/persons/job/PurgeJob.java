@@ -2,7 +2,6 @@ package com.squirrel.persons.job;
 
 
 import com.squirrel.persons.service.FileService;
-import com.squirrel.persons.util.FilesUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,9 @@ public class PurgeJob {
     @Scheduled(fixedDelay = 600000)
     public void triggerJob() throws IOException {
         LOGGER.info("Purge job start");
-        fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/archives/", 1);
+        fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/data/archives/captured-criminals", 1);
+        fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/data/archives/unknown-visitors", 1);
+
         LOGGER.info("Purge job complete");
     }
 

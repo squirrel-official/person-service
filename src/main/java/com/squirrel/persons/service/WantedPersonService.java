@@ -24,7 +24,7 @@ import java.util.Set;
 @Slf4j
 public class WantedPersonService {
     public static final String CRIME_STOPPERS_VIC_WANTED_PERSONS_URL = "https://www.crimestoppersvic.com.au/help-solve-crime/wanted-persons/";
-    public static final String WANTED_CRIMINALS_DIRECTORY = "/usr/local/squirrel-ai/wanted-criminals/";
+    public static final String WANTED_CRIMINALS_DIRECTORY = "/usr/local/squirrel-ai/data/wanted-criminals/";
 
     public void refreshWantedPersons() throws IOException {
         deleteAllFiles(WANTED_CRIMINALS_DIRECTORY);

@@ -1,9 +1,9 @@
 package com.squirrel.persons.service;
 
 import com.itextpdf.text.Image;
+import com.squirrel.persons.util.FileUtils;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,8 +19,8 @@ public class FileService {
     public Set<Image> getListOfFiles(String path) throws IOException {
         Set<Image> images = Files.walk(Paths.get(path))
                 .filter(Files::isRegularFile)
-                .filter(FileService::imageCheck)
-                .filter(FileService::checkNotHidden)
+                .filter(FileUtils::imageCheck)
+                .filter(FileUtils::checkNotHidden)
                 .map(FileService::formatImages).filter(Objects::nonNull).limit(50).collect(Collectors.toSet());
         return images;
     }
@@ -29,8 +29,8 @@ public class FileService {
     public void purgeFilesOlderThanNDays(String path, int days) throws IOException {
         Set<Path> paths = Files.walk(Paths.get(path))
                 .filter(Files::isRegularFile)
-                .filter(FileService::isNotImage)
-                .filter(FileService::checkNotHidden).filter(Objects::nonNull).collect(Collectors.toSet());
+                .filter(FileUtils::isNotImage)
+                .filter(FileUtils::checkNotHidden).filter(Objects::nonNull).collect(Collectors.toSet());
 
         for (Path eachPath : paths) {
             BasicFileAttributes basicFileAttributes = Files.readAttributes(eachPath, BasicFileAttributes.class);
@@ -42,28 +42,6 @@ public class FileService {
         }
     }
 
-    private static boolean isNotImage(Path file) {
-       return !imageCheck(file);
-    }
-
-    private static boolean imageCheck(Path file) {
-        try {
-            String mimetype = Files.probeContentType(file);
-            return mimetype != null && mimetype.split("/")[0].equals("image");
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private static boolean checkNotHidden(Path eachFilePath) {
-        try {
-            return !Files.isHidden(eachFilePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     private static Image formatImages(Path file) {
         Image image;

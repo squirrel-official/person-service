@@ -1,9 +1,8 @@
 package com.squirrel.persons.job;
 
 import com.itextpdf.text.DocumentException;
-import com.squirrel.persons.controller.WantedPersonController;
 import com.squirrel.persons.service.EmailService;
-import com.squirrel.persons.util.FilesUtils;
+import com.squirrel.persons.util.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,8 @@ import java.io.IOException;
 
 @Component
 public class SuspectedPersonsJob {
+    public static final String CAPTURED_CRIMINALS = "/usr/local/squirrel-ai/result/captured-criminals/";
+    public static final String ARCHIVES_CAPTURED = "/usr/local/squirrel-ai/data/archives/captured-criminals";
     public final EmailService emailService;
 
     @Value("${mail.recipient}")
@@ -30,9 +31,8 @@ public class SuspectedPersonsJob {
     @Scheduled(fixedDelay = 300000)
     public void triggerJob() throws MessagingException, DocumentException, IOException {
         LOGGER.info("Triggering captured job");
-        emailService.attachImagesAndSendEmail(toEmailAddress, "/usr/local/squirrel-ai/captured/");
-        FilesUtils.copyAllFiles("/usr/local/squirrel-ai/captured/", "/usr/local/squirrel-ai/archives/captured");
-
+        emailService.attachImagesAndSendEmail(toEmailAddress, CAPTURED_CRIMINALS);
+        FileUtils.copyAllFiles(CAPTURED_CRIMINALS, ARCHIVES_CAPTURED);
     }
 
 }
