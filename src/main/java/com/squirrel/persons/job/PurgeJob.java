@@ -22,7 +22,7 @@ public class PurgeJob {
         this.fileService = fileService;
     }
 
-    @Scheduled(fixedDelay = 600000)
+    @Scheduled(fixedDelay = 12000000)
     public void triggerJob() throws IOException {
         LOGGER.info("Purge job start");
         fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/data/archives/captured-criminals", 1);
