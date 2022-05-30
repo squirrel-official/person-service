@@ -15,10 +15,10 @@ public class FileUtils {
        String destination = destinationPath + LocalDateTime.now().toLocalDate();
        File destDir = new File(destination);
        try {
-           Files.move(srcDir.toPath(), destDir.toPath(), new StandardCopyOption[]{StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES});
+           Files.move(srcDir.toPath(), destDir.toPath(), new StandardCopyOption[]{StandardCopyOption.REPLACE_EXISTING});
        }catch (DirectoryNotEmptyException de){
           File tempDirectory = new File(destination+"/temp");
-           Files.move(srcDir.toPath(), tempDirectory.toPath(), new StandardCopyOption[]{StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES});
+           Files.move(srcDir.toPath(), tempDirectory.toPath(), new StandardCopyOption[]{StandardCopyOption.REPLACE_EXISTING});
            Files.createDirectory(srcDir.toPath());
            org.apache.commons.io.FileUtils.copyDirectory(tempDirectory , destDir);
            org.apache.commons.io.FileUtils.deleteDirectory(tempDirectory);
