@@ -35,6 +35,7 @@ public class EmailService {
 
     public void attachImagesAndSendEmail(String toEmail, String path, String emailMessage, String detailMessage) throws MessagingException, IOException, DocumentException {
         Set<Image> imageSet = fileService.getListOfFiles(path);
+        LOGGER.debug(String.format("total files to be attached : %s",imageSet.size()));
         if (!imageSet.isEmpty()) {
             File file = createDocument(imageSet);
             MimeMessage message = sender.createMimeMessage();
