@@ -16,7 +16,7 @@ import java.io.IOException;
 @Component
 public class SuspectedPersonsJob {
     public static final String CAPTURED_CRIMINALS = "/usr/local/squirrel-ai/result/captured-criminals/";
-    public static final String ARCHIVES_CAPTURED = "/usr/local/squirrel-ai/data/archives/captured-criminals";
+    public static final String ARCHIVES_CAPTURED = "/usr/local/squirrel-ai/data/archives/captured-criminals/";
     public final EmailService emailService;
 
     @Value("${mail.recipient}")
