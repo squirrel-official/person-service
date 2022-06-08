@@ -24,11 +24,10 @@
     </Appenders>
     <Loggers>
         <Root level="INFO">
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
         </Root>
         <Logger name="com.squirrel.persons" level="DEBUG" additivity="true">
             <AppenderRef ref="File"/>
-            <AppenderRef ref="Console"/>
         </Logger>
     </Loggers>
 </Configuration>
