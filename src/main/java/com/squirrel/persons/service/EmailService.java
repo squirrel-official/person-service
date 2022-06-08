@@ -45,6 +45,8 @@ public class EmailService {
             helper.setText(detailMessage, true);
             helper.addAttachment(file.getName(), file);
             sender.send(message);
+            long size = file.length() / (1024 * 1024);
+            LOGGER.info(String.format("Sent mail with attachment size %s", size));
             if(!file.delete()) {
                 file.deleteOnExit();
             }
