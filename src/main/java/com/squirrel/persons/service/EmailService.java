@@ -39,24 +39,28 @@ public class EmailService {
     }
 
     public void attachImagesAndSendEmail(String toEmail, String path, String emailMessage, String detailMessage) throws MessagingException, IOException, DocumentException {
-        Set<Image> imageSet = fileService.getListOfFiles(path);
-        LOGGER.debug(String.format("total files to be attached : %s for %s",imageSet.size(),emailMessage));
-        if (!imageSet.isEmpty()) {
-            File file = createDocument(imageSet);
-            MimeMessage message = sender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                    StandardCharsets.UTF_8.name());
-            helper.setTo(toEmail);
-            helper.setSubject(emailMessage);
-            helper.setText(detailMessage, true);
-            helper.addAttachment(file.getName(), file);
-            sender.send(message);
-            long size = file.length() / (1024 * 1024);
-            LOGGER.info(String.format("Sent mail with attachment size %s", size));
-            if(!file.delete()) {
-                file.deleteOnExit();
-            }
-        }
+       try {
+           Set<Image> imageSet = fileService.getListOfFiles(path);
+           LOGGER.debug(String.format("total files to be attached : %s for %s", imageSet.size(), emailMessage));
+           if (!imageSet.isEmpty()) {
+               File file = createDocument(imageSet);
+               MimeMessage message = sender.createMimeMessage();
+               MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                       StandardCharsets.UTF_8.name());
+               helper.setTo(toEmail);
+               helper.setSubject(emailMessage);
+               helper.setText(detailMessage, true);
+               helper.addAttachment(file.getName(), file);
+               sender.send(message);
+               long size = file.length() / (1024 * 1024);
+               LOGGER.info(String.format("Sent mail with attachment size %s", size));
+               if (!file.delete()) {
+                   file.deleteOnExit();
+               }
+           }
+       }catch (Exception exception){
+           LOGGER.error("An error happened", exception );
+       }
     }
 
 
