@@ -21,7 +21,7 @@ public class FileService {
                 .filter(Files::isRegularFile)
                 .filter(FileUtils::imageCheck)
                 .filter(FileUtils::checkNotHidden)
-                .map(FileService::formatImages).filter(Objects::nonNull).limit(50).collect(Collectors.toSet());
+                .map(FileService::formatImages).filter(Objects::nonNull).limit(20).collect(Collectors.toSet());
         return images;
     }
 
