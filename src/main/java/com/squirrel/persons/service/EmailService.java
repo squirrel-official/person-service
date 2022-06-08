@@ -5,8 +5,11 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.squirrel.persons.job.SuspectedPersonsJob;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -25,8 +28,10 @@ import java.util.Set;
 public class EmailService {
 
     private JavaMailSender sender;
-    private static final Log LOGGER = LogFactory.getLog(EmailService.class);
     private FileService fileService;
+
+    private static final Logger LOGGER = LogManager.getLogger(EmailService.class);
+
     @Autowired
     protected EmailService(JavaMailSender sender,FileService fileService) {
         this.sender = sender;
