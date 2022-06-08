@@ -9,9 +9,24 @@
         <File name="File" fileName="logs/application.log">
             <PatternLayout pattern="%d{MM.dd.yyyy HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </File>
+        <RollingFile name="RollingFileAppender" fileName="logs/app.log"
+                     filePattern="logs/${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>%d [%t] %p %c - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
     </Appenders>
     <Loggers>
-        <Logger name="com.squirrel.persons" level="ALL" additivity="true">
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+        </Root>
+        <Logger name="com.squirrel.persons" level="DEBUG" additivity="true">
             <AppenderRef ref="File"/>
             <AppenderRef ref="Console"/>
         </Logger>
