@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class EmailService {
 
     private static final Logger LOGGER = LogManager.getLogger(EmailService.class);
 
+    @Value("${spring.mail.username}")
+    private String fromUser;
+
     @Autowired
     protected EmailService(JavaMailSender sender,FileService fileService) {
         this.sender = sender;
@@ -51,6 +55,7 @@ public class EmailService {
                helper.setSubject(emailMessage);
                helper.setText(detailMessage, true);
                helper.addAttachment(file.getName(), file);
+               message.setFrom(fromUser);
                sender.send(message);
                long size = file.length() / (1024 * 1024);
                LOGGER.info(String.format("Sent mail with attachment size %s", size));
