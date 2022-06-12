@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableScheduling
@@ -23,5 +24,10 @@ public class PersonServiceApplication {
             Process process = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/detection.sh");
             LOGGER.debug("detection process started {}", process);
         };
+    }
+
+    @Bean
+    public RestTemplate template() {
+        return new RestTemplate();
     }
 }
