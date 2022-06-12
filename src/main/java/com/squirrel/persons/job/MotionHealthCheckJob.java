@@ -21,9 +21,13 @@ public class MotionHealthCheckJob {
 
     @Scheduled(fixedDelay = 300000)
     public void triggerJob() {
-        LOGGER.info("Motion health check job Start");
-        String result = restTemplate.getForObject(url, String.class);
-        LOGGER.info("Motion health check job End {}",result);
+        try {
+            LOGGER.info("Motion health check job Start");
+            String result = restTemplate.getForObject(url, String.class);
+            LOGGER.info("Motion health check job End {}", result);
+        }catch (Exception ex){
+            LOGGER.error(ex);
+        }
     }
 
 }
