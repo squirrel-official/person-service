@@ -39,7 +39,7 @@ public class MotionHealthCheckJob {
             return  Boolean.TRUE;
         }catch (Exception ex){
             LOGGER.error("The Url {} is not available, scheduling restart of system", url);
-            return  Boolean.TRUE;
+            return  Boolean.FALSE;
 
         }
     }
