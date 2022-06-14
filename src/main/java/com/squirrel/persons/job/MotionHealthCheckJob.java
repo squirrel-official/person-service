@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class MotionHealthCheckJob {
-    String url = "http://localhost:7777/";
+    String preUrl = "http://localhost:7776/";
     private static final Logger LOGGER = LogManager.getLogger(com.squirrel.persons.job.MotionHealthCheckJob.class);
     private RestTemplate restTemplate;
 
@@ -32,15 +32,19 @@ public class MotionHealthCheckJob {
     }
 
     private boolean isMotionServiceUp() {
-        try {
-            LOGGER.debug("Motion health check job Start");
-            restTemplate.getForObject(url, String.class);
-            LOGGER.debug("Motion health check job complete");
-            return  Boolean.TRUE;
-        }catch (Exception ex){
-            LOGGER.error("The Url {} is not available, scheduling restart of system", url);
-            return  Boolean.FALSE;
+        for(int i=1; i<4; i++) {
+            try {
+                String url=preUrl+"i"+"/stream/";
+                LOGGER.debug("Motion health check job Start");
+                restTemplate.getForObject(url, String.class);
+                LOGGER.debug("Motion health check job complete");
+                return Boolean.TRUE;
+            } catch (Exception ex) {
+                LOGGER.error("The stream id {} is not available, scheduling restart of motion system", i);
+                return Boolean.FALSE;
 
+            }
         }
+        return Boolean.TRUE;
     }
 }
