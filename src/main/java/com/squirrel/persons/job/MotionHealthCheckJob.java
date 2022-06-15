@@ -40,7 +40,7 @@ public class MotionHealthCheckJob {
                 LOGGER.debug("Motion health check job complete");
                 return Boolean.TRUE;
             } catch (Exception ex) {
-                LOGGER.error("The stream id {} is not available, scheduling restart of motion system", i);
+                LOGGER.error("The stream id {} is not available, scheduling restart of motion system", i, ex);
                 return Boolean.FALSE;
 
             }
