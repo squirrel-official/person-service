@@ -2,31 +2,23 @@ package com.squirrel.persons.job;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.net.*;
 
 @Component
 public class MotionHealthCheckJob {
     String preUrl = "http://my-security.local:7776/";
-    String motionRestartCommand = "/usr/local/person-service/src/main/resources/motion-restart.sh";
+    String motionRestartCommand = "sh /usr/local/person-service/src/main/resources/motion-restart.sh";
     private static final Logger LOGGER = LogManager.getLogger(com.squirrel.persons.job.MotionHealthCheckJob.class);
-    private RestTemplate restTemplate;
-
-    @Autowired
-    public MotionHealthCheckJob(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     @Scheduled(fixedDelay = 30000)
     public void triggerJob() {
         if (!isMotionServiceUp()) {
             try {
                 Runtime.getRuntime().exec(motionRestartCommand);
-                Process process = Runtime.getRuntime().exec("sh "+motionRestartCommand);
+                Process process = Runtime.getRuntime().exec(motionRestartCommand);
                 LOGGER.error("Motion software is being restarted {}", process);
             } catch (Exception e) {
                 LOGGER.error("An error happened", e);
@@ -36,7 +28,6 @@ public class MotionHealthCheckJob {
 
     private boolean isMotionServiceUp() {
         LOGGER.debug("Motion health check job Start");
-        boolean result = true;
         for (int i = 1; i < 4; i++) {
             try {
                 String url = preUrl + i + "/stream/";
@@ -47,7 +38,7 @@ public class MotionHealthCheckJob {
                 return false;
             }
         }
-        return result;
+        return true;
     }
 
     public boolean isServerReachable(String url) {

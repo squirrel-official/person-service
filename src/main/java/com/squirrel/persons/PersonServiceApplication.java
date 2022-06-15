@@ -25,9 +25,4 @@ public class PersonServiceApplication {
             LOGGER.debug("detection process started {}", process);
         };
     }
-
-    @Bean
-    public RestTemplate template() {
-        return new RestTemplate();
-    }
 }
