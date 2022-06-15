@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class MotionHealthCheckJob {
-    String preUrl = "http://localhost:7776/";
+    String preUrl = "http://my-security.local:7776/";
     private static final Logger LOGGER = LogManager.getLogger(com.squirrel.persons.job.MotionHealthCheckJob.class);
     private RestTemplate restTemplate;
 
