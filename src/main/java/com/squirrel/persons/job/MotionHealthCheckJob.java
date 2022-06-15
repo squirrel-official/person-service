@@ -17,9 +17,10 @@ public class MotionHealthCheckJob {
     public void triggerJob() {
         if (!isMotionServiceUp()) {
             try {
+                LOGGER.info("Motion software is being restarted");
                 Runtime.getRuntime().exec(motionRestartCommand);
                 Process process = Runtime.getRuntime().exec(motionRestartCommand);
-                LOGGER.error("Motion software is being restarted {}", process);
+                LOGGER.info("Motion software is being restarted {}", process);
             } catch (Exception e) {
                 LOGGER.error("An error happened", e);
             }
