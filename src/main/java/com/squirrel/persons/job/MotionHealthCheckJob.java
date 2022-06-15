@@ -5,7 +5,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 @Component
 public class MotionHealthCheckJob {
@@ -30,12 +31,8 @@ public class MotionHealthCheckJob {
     private boolean isMotionServiceUp() {
         LOGGER.debug("Motion health check job Start");
         for (int i = 1; i < 4; i++) {
-            try {
-                String url = preUrl + i + "/stream/";
-                boolean reachable = isServerReachable(url);
-                LOGGER.debug(reachable);
-            } catch (Exception ex) {
-                LOGGER.error("The stream id {} is not available, scheduling restart of motion system", i, ex);
+            String url = preUrl + i + "/stream/";
+            if (!isServerReachable(url)) {
                 return false;
             }
         }
