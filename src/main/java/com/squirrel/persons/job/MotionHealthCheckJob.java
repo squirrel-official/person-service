@@ -34,7 +34,7 @@ public class MotionHealthCheckJob {
     private boolean isMotionServiceUp() {
         for(int i=1; i<4; i++) {
             try {
-                String url=preUrl+"i"+"/stream/";
+                String url=preUrl+i+"/stream/";
                 LOGGER.debug("Motion health check job Start");
                 restTemplate.getForObject(url, String.class);
                 LOGGER.debug("Motion health check job complete");
