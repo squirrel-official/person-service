@@ -23,8 +23,8 @@
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Logger name="com.squirrel.persons" level="DEBUG" additivity="true">
+        <Root level="INFO">
             <AppenderRef ref="File"/>
-        </Logger>
+        </Root>
     </Loggers>
 </Configuration>
