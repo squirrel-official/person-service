@@ -3,7 +3,7 @@
     <Appenders>
         <RollingFile name="fileLogger"
                      fileName="logs/application.log"
-                     filePattern="${basePath}/app-%d{yyyy-MM-dd}.log">
+                     filePattern="logs/application-%d{yyyy-MM-dd}.log">
             <PatternLayout>
                 <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
                 </pattern>
@@ -14,7 +14,7 @@
             </Policies>
             <!-- Max 10 files will be created everyday -->
             <DefaultRolloverStrategy max="10">
-                <Delete basePath="${basePathr}" maxDepth="10">
+                <Delete basePath="logs" maxDepth="10">
                     <!-- Delete all files older than 30 days -->
                     <IfLastModified age="30d" />
                 </Delete>
