@@ -1,2 +1,2 @@
-sudo -u pi /usr/bin/motion restart
-touch /usr/local/person-service/end.txt
+sudo /usr/sbin/service  motion stop
+sudo /usr/sbin/service  motion start
