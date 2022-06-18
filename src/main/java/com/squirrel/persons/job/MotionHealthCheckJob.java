@@ -14,7 +14,7 @@ public class MotionHealthCheckJob {
     String motionRestartCommand = "sh /usr/local/person-service/src/main/resources/motion-restart.sh";
     private static final Logger LOGGER = LogManager.getLogger(com.squirrel.persons.job.MotionHealthCheckJob.class);
 
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 120000)
     public void triggerJob() {
         if (!isMotionServiceUp()) {
             try {
