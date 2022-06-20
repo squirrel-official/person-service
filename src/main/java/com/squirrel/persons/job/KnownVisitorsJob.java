@@ -32,10 +32,11 @@ public class KnownVisitorsJob {
     @Scheduled(fixedDelay = 60000)
     public void triggerJob() throws MessagingException, DocumentException, IOException {
         LOGGER.info("Triggering known visitor job");
-        emailService.attachImagesAndSendEmail(toEmailAddress, VISITOR_PATH,"Known visitors",
-                "Somebody you know is on gate");
-        FileUtils.copyAllFiles(VISITOR_PATH, VISITOR_ARCHIVE_PATH);
-//        FileUtils.deleteImages(VISITOR_ARCHIVE_PATH);
+        if(emailService.attachImagesAndSendEmail(toEmailAddress, VISITOR_PATH,"Known visitors",
+                "Somebody you know is on gate")) {
+            FileUtils.copyAllFiles(VISITOR_PATH, VISITOR_ARCHIVE_PATH);
+    //        FileUtils.deleteImages(VISITOR_ARCHIVE_PATH);
+        }
     }
 
 }

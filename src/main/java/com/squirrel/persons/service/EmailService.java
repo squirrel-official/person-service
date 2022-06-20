@@ -42,7 +42,7 @@ public class EmailService {
         this.fileService = fileService;
     }
 
-    public void attachImagesAndSendEmail(String toEmail, String path, String emailMessage, String detailMessage) throws MessagingException, IOException, DocumentException {
+    public boolean attachImagesAndSendEmail(String toEmail, String path, String emailMessage, String detailMessage) throws MessagingException, IOException, DocumentException {
        try {
            Set<Image> imageSet = fileService.getListOfFiles(path);
            LOGGER.debug(String.format("total files to be attached : %s for %s", imageSet.size(), emailMessage));
@@ -65,7 +65,9 @@ public class EmailService {
            }
        }catch (Exception exception){
            LOGGER.error("An error happened", exception );
+           return false;
        }
+        return true;
     }
 
 
