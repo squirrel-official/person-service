@@ -14,26 +14,28 @@ import javax.mail.MessagingException;
 import java.io.IOException;
 
 @Component
-public class SuspectedPersonsJob {
-    public static final String CAPTURED_CRIMINALS = "/usr/local/squirrel-ai/result/captured-criminals/";
-    public static final String ARCHIVES_CAPTURED = "/usr/local/squirrel-ai/data/archives/captured-criminals/";
-    public final EmailService emailService;
-
+public class FriendsJob {
+    public static final String VISITOR_PATH = "/usr/local/squirrel-ai/result/known-visitors/";
+    public static final String VISITOR_ARCHIVE_PATH = "/usr/local/squirrel-ai/data/archives/known-visitors/";
     @Value("${mail.recipient}")
     private String toEmailAddress;
+
+    public final EmailService emailService;
+
+    private static final Logger LOGGER = LogManager.getLogger(FriendsJob.class);
+
     @Autowired
-    public SuspectedPersonsJob(EmailService emailService) {
+    public FriendsJob(EmailService emailService) {
         this.emailService = emailService;
     }
 
-    private static final Logger LOGGER = LogManager.getLogger(SuspectedPersonsJob.class);
-
     @Scheduled(fixedDelay = 60000)
     public void triggerJob() throws MessagingException, DocumentException, IOException {
-        LOGGER.info("Triggering captured job");
-        if(emailService.attachImagesAndSendEmail(toEmailAddress, CAPTURED_CRIMINALS,"Suspected Criminal found",
-                "Following suspected criminal persons appears to be captured by your camera")) {
-            FileUtils.copyAllFiles(CAPTURED_CRIMINALS, ARCHIVES_CAPTURED);
+        LOGGER.info("Triggering known visitor job");
+        if(emailService.attachImagesAndSendEmail(toEmailAddress, VISITOR_PATH,"Known visitors",
+                "Somebody you know is on gate")) {
+            FileUtils.copyAllFiles(VISITOR_PATH, VISITOR_ARCHIVE_PATH);
+    //        FileUtils.deleteImages(VISITOR_ARCHIVE_PATH);
         }
     }
 
