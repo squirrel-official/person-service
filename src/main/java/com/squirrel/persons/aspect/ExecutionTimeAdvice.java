@@ -1,6 +1,5 @@
 package com.squirrel.persons.aspect;
 
-import com.squirrel.persons.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
