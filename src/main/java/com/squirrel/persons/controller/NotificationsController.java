@@ -36,8 +36,8 @@ public class NotificationsController {
     @PostMapping("/notification")
     public void sendNotification(@RequestBody String cameraName) {
         String subjectMessage = String.format("A notification received from %s", cameraName);
-        String emailMessage = "you can access the feed using following link http://my-security.local:7777 ." +
-                " You will be getting images shortly";
+        String emailMessage = "you can access the camera feed using link http://my-security.local:7777" +
+                " If there is any human activity then you will be getting images shortly.";
         try {
             emailService.triggerNotification(toEmailAddress, subjectMessage, emailMessage);
         } catch (Exception exception) {
