@@ -5,6 +5,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.squirrel.persons.aspect.TrackExecutionTime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -39,6 +40,7 @@ public class EmailService {
         this.fileService = fileService;
     }
 
+    @TrackExecutionTime
     public boolean attachImagesAndSendEmail(String toEmail, String path, String emailMessage, String detailMessage) throws MessagingException, IOException, DocumentException {
        try {
            Set<Image> imageSet = fileService.getListOfFiles(path);
