@@ -35,37 +35,49 @@ public class EmailService {
     private String fromUser;
 
     @Autowired
-    protected EmailService(JavaMailSender sender,FileService fileService) {
+    protected EmailService(JavaMailSender sender, FileService fileService) {
         this.sender = sender;
         this.fileService = fileService;
     }
 
     @TrackExecutionTime
+    public void triggerNotification(String toEmail, String subjectMessage, String detailMessage) throws MessagingException{
+        MimeMessage message = sender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                StandardCharsets.UTF_8.name());
+        helper.setTo(toEmail);
+        helper.setSubject(subjectMessage);
+        helper.setText(detailMessage, true);
+        message.setFrom(fromUser);
+        sender.send(message);
+    }
+
+    @TrackExecutionTime
     public boolean attachImagesAndSendEmail(String toEmail, String path, String emailMessage, String detailMessage) throws MessagingException, IOException, DocumentException {
-       try {
-           Set<Image> imageSet = fileService.getListOfFiles(path);
-           LOGGER.debug(String.format("total files to be attached : %s for %s", imageSet.size(), emailMessage));
-           if (!imageSet.isEmpty()) {
-               File file = createDocument(imageSet);
-               MimeMessage message = sender.createMimeMessage();
-               MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                       StandardCharsets.UTF_8.name());
-               helper.setTo(toEmail);
-               helper.setSubject(emailMessage);
-               helper.setText(detailMessage, true);
-               helper.addAttachment(file.getName(), file);
-               message.setFrom(fromUser);
-               sender.send(message);
-               long size = file.length() / (1024 * 1024);
-               LOGGER.info(String.format("Sent mail with attachment size %s", size));
-               if (!file.delete()) {
-                   file.deleteOnExit();
-               }
-           }
-       }catch (Exception exception){
-           LOGGER.error("An error happened", exception );
-           return false;
-       }
+        try {
+            Set<Image> imageSet = fileService.getListOfFiles(path);
+            LOGGER.debug(String.format("total files to be attached : %s for %s", imageSet.size(), emailMessage));
+            if (!imageSet.isEmpty()) {
+                File file = createDocument(imageSet);
+                MimeMessage message = sender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                        StandardCharsets.UTF_8.name());
+                helper.setTo(toEmail);
+                helper.setSubject(emailMessage);
+                helper.setText(detailMessage, true);
+                helper.addAttachment(file.getName(), file);
+                message.setFrom(fromUser);
+                sender.send(message);
+                long size = file.length() / (1024 * 1024);
+                LOGGER.info(String.format("Sent mail with attachment size %s", size));
+                if (!file.delete()) {
+                    file.deleteOnExit();
+                }
+            }
+        } catch (Exception exception) {
+            LOGGER.error("An error happened", exception);
+            return false;
+        }
         return true;
     }
 
