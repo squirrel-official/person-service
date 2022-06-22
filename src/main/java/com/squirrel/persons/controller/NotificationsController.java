@@ -33,7 +33,7 @@ public class NotificationsController {
         this.emailService = emailService;
     }
 
-    @PostMapping("/start")
+    @PostMapping("/notification")
     public void sendNotification(@RequestBody String cameraName) {
         String subjectMessage = String.format("A notification received from %s", cameraName);
         String emailMessage = "you can access the feed using following link https://my-security.local:7777 ." +
