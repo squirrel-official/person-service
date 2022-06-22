@@ -47,6 +47,7 @@ public class NotificationsController {
 
     @PostMapping("/visitor")
     public void sendVisitorNotificationWithAttachment() {
+        LOGGER.debug("Visitor Notification ");
         try {
             String subjectMessage = "Unknown visitors";
             String emailMessage = "People who were near your property today";
@@ -61,6 +62,7 @@ public class NotificationsController {
 
     @PostMapping("/criminal")
     public void sendCriminalNotificationWithAttachment() {
+        LOGGER.debug("Criminal Notification ");
         try {
             String subjectMessage = "Suspected Person found";
             String emailMessage = "Following suspected criminal persons were seen near your house";
@@ -74,6 +76,7 @@ public class NotificationsController {
 
     @PostMapping("/friend")
     public void sendFriendNotificationWithAttachment() {
+        LOGGER.debug("Friend Notification ");
         String subjectMessage = "Familiar person found";
         String emailMessage = "Attached familiar faces were found near your house";
         try {
