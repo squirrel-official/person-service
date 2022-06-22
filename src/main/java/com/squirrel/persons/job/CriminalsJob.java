@@ -28,7 +28,7 @@ public class CriminalsJob {
 
     private static final Logger LOGGER = LogManager.getLogger(CriminalsJob.class);
 
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 10000)
     public void triggerJob() throws MessagingException, DocumentException, IOException {
         LOGGER.info("Triggering captured job");
         if(emailService.attachImagesAndSendEmail(toEmailAddress, CAPTURED_CRIMINALS,"Suspected Criminal found",
