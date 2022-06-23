@@ -8,8 +8,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.squirrel.persons.Constant.*;
@@ -34,7 +36,9 @@ public class NotificationsController {
     }
 
     @PostMapping("/notification")
-    public void sendNotification(@RequestBody String cameraName) {
+    public void sendNotification(@RequestParam MultiValueMap<String, String> params) {
+        String cameraName = params.getFirst("camera-id")!=null? params.getFirst("camera-id") :"General Camera" ;
+        LOGGER.debug("received notification from camera : {}", cameraName );
         String subjectMessage = String.format("A notification received from %s", cameraName);
         String emailMessage = "you can access the camera feed using link http://my-security.local:7777" +
                 " If there is any human activity then you will be getting images shortly.";
