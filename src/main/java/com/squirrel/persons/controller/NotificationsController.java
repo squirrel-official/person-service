@@ -1,18 +1,22 @@
 package com.squirrel.persons.controller;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.squirrel.persons.service.EmailService;
 import com.squirrel.persons.util.FileUtils;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.squirrel.persons.Constant.*;
 
@@ -25,6 +29,10 @@ public class NotificationsController {
 
     private static final Logger LOGGER = LogManager.getLogger(NotificationsController.class);
 
+    private static int expirationMinutes= 2;
+
+    private DateTime lastNotificationTime;
+
     @Value("${mail.recipient}")
     private String toEmailAddress;
 
@@ -33,19 +41,24 @@ public class NotificationsController {
     @Autowired
     public NotificationsController(EmailService emailService) {
         this.emailService = emailService;
+        this.lastNotificationTime = DateTime.now();
     }
 
     @PostMapping("/notification")
     public void sendNotification(@RequestParam MultiValueMap<String, String> params) {
-        String cameraName = params.getFirst("camera-id")!=null? params.getFirst("camera-id") :"General Camera" ;
-        LOGGER.debug("received notification from camera : {}", cameraName );
-        String subjectMessage = String.format("A notification received from %s", cameraName);
-        String emailMessage = "you can access the camera feed using link http://my-security.local:7777" +
-                " If there is any human activity then you will be getting images shortly.";
-        try {
-            emailService.triggerNotification(toEmailAddress, subjectMessage, emailMessage);
-        } catch (Exception exception) {
-            LOGGER.error("Trigger notifications failed", exception);
+        DateTime now = DateTime.now();
+        if(isAfterExpiry(now)) {
+            String cameraName = params.getFirst("camera-id") != null ? params.getFirst("camera-id") : "General Camera";
+            LOGGER.debug("received notification from camera : {}", cameraName);
+            String subjectMessage = String.format("A notification received from %s", cameraName);
+            String emailMessage = "you can access the camera feed using link http://my-security.local:7777" +
+                    " If there is any human activity then you will be getting images shortly.";
+            try {
+                emailService.triggerNotification(toEmailAddress, subjectMessage, emailMessage);
+                lastNotificationTime = now;
+            } catch (Exception exception) {
+                LOGGER.error("Trigger notifications failed", exception);
+            }
         }
     }
 
@@ -90,5 +103,9 @@ public class NotificationsController {
         } catch (Exception exception) {
             LOGGER.error("Trigger notifications failed", exception);
         }
+    }
+
+    private boolean isAfterExpiry(DateTime now) {
+        return now.minusMinutes(expirationMinutes).isAfter(lastNotificationTime);
     }
 }
