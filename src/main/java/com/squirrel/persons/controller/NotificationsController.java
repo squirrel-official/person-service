@@ -1,7 +1,5 @@
 package com.squirrel.persons.controller;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.squirrel.persons.service.EmailService;
 import com.squirrel.persons.util.FileUtils;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.concurrent.TimeUnit;
 
 import static com.squirrel.persons.Constant.*;
 
