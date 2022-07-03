@@ -14,7 +14,7 @@ public class MotionHealthCheckJob {
     String motionRestartCommand = "sh /usr/local/person-service/src/main/resources/motion-restart.sh";
     private static final Logger LOGGER = LogManager.getLogger(com.squirrel.persons.job.MotionHealthCheckJob.class);
 
-    @Scheduled(fixedDelay = 120000)
+    @Scheduled(fixedDelay = 180000)
     public void triggerJob() {
         if (!isMotionServiceUp()) {
             try {
@@ -48,9 +48,11 @@ public class MotionHealthCheckJob {
             if (urlConn.getResponseCode() == 200) {
                 return true;
             } else {
+                LOGGER.error("The  url {} is not available, url");
                 return false;
             }
         } catch (Exception e) {
+            LOGGER.error("The  url {} is not available, url");
             LOGGER.error(e);
         }
         return false;
