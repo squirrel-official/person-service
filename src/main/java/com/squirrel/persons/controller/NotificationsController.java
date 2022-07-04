@@ -46,7 +46,7 @@ public class NotificationsController {
         DateTime now = DateTime.now();
         if(isAfterExpiry(now)) {
             String cameraName = params.getFirst("camera-id") != null ? params.getFirst("camera-id") : "General Camera";
-            LOGGER.debug("received notification from camera : {}", cameraName);
+            LOGGER.info("received notification from camera : {}", cameraName);
             String subjectMessage = String.format("A notification received from %s", cameraName);
             String emailMessage = "you can access the camera feed using link http://my-security.local:7777" +
                     " If there is any human activity then you will be getting images shortly.";
@@ -61,7 +61,7 @@ public class NotificationsController {
 
     @PostMapping("/visitor")
     public void sendVisitorNotificationWithAttachment() {
-        LOGGER.debug("Visitor Notification ");
+        LOGGER.info("received visitor notification ");
         try {
             String subjectMessage = "Unknown visitors";
             String emailMessage = "People who were near your property today";
@@ -76,7 +76,7 @@ public class NotificationsController {
 
     @PostMapping("/criminal")
     public void sendCriminalNotificationWithAttachment() {
-        LOGGER.debug("Criminal Notification ");
+        LOGGER.info("received criminal notification ");
         try {
             String subjectMessage = "Suspected Person found";
             String emailMessage = "Following suspected criminal persons were seen near your house";
@@ -90,7 +90,7 @@ public class NotificationsController {
 
     @PostMapping("/friend")
     public void sendFriendNotificationWithAttachment() {
-        LOGGER.debug("Friend Notification ");
+        LOGGER.info("received Friend Notification ");
         String subjectMessage = "Familiar person found";
         String emailMessage = "Attached familiar faces were found near your house";
         try {

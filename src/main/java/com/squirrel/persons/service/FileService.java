@@ -18,15 +18,12 @@ import java.util.stream.Collectors;
 @Component
 public class FileService {
 
-    @Value("${mail.images.count:50}")
-    private int imageCount;
-
-    public Set<Image> getListOfFiles(String path) throws IOException {
+    public Set<Image> getListOfAllFiles(String path) throws IOException {
         Set<Image> images = Files.walk(Paths.get(path))
                 .filter(Files::isRegularFile)
                 .filter(FileUtils::imageCheck)
                 .filter(FileUtils::checkNotHidden)
-                .map(FileService::formatImages).filter(Objects::nonNull).limit(imageCount).collect(Collectors.toSet());
+                .map(FileService::formatImages).filter(Objects::nonNull).collect(Collectors.toSet());
         return images;
     }
 

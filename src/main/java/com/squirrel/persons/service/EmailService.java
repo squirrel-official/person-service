@@ -1,6 +1,7 @@
 package com.squirrel.persons.service;
 
 
+import com.google.common.collect.Iterables;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -34,6 +36,9 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromUser;
 
+    @Value("${mail.images.count:50}")
+    private int eachEmailImageCount;
+
     @Autowired
     protected EmailService(JavaMailSender sender, FileService fileService) {
         this.sender = sender;
@@ -41,7 +46,7 @@ public class EmailService {
     }
 
     @TrackExecutionTime
-    public void triggerNotification(String toEmail, String subjectMessage, String detailMessage) throws MessagingException{
+    public void triggerNotification(String toEmail, String subjectMessage, String detailMessage) throws MessagingException {
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
@@ -54,24 +59,26 @@ public class EmailService {
 
     @TrackExecutionTime
     public boolean attachImagesAndSendEmail(String toEmail, String path, String emailMessage, String detailMessage) throws MessagingException, IOException, DocumentException {
+        Set<Image> allFiles = fileService.getListOfAllFiles(path);
+        LOGGER.debug(String.format("total files to be attached : %s for %s", allFiles.size(), emailMessage));
         try {
-            Set<Image> imageSet = fileService.getListOfFiles(path);
-            LOGGER.debug(String.format("total files to be attached : %s for %s", imageSet.size(), emailMessage));
-            if (!imageSet.isEmpty()) {
-                File file = createDocument(imageSet);
-                MimeMessage message = sender.createMimeMessage();
-                MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                        StandardCharsets.UTF_8.name());
-                helper.setTo(toEmail);
-                helper.setSubject(emailMessage);
-                helper.setText(detailMessage, true);
-                helper.addAttachment(file.getName(), file);
-                message.setFrom(fromUser);
-                sender.send(message);
-                long size = file.length() / (1024 * 1024);
-                LOGGER.info(String.format("Sent mail with attachment size %s", size));
-                if (!file.delete()) {
-                    file.deleteOnExit();
+            for (List<Image> eachImageSet : Iterables.partition(allFiles, eachEmailImageCount)) {
+                if (!eachImageSet.isEmpty()) {
+                    File file = createDocument(eachImageSet);
+                    MimeMessage message = sender.createMimeMessage();
+                    MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                            StandardCharsets.UTF_8.name());
+                    helper.setTo(toEmail);
+                    helper.setSubject(emailMessage);
+                    helper.setText(detailMessage, true);
+                    helper.addAttachment(file.getName(), file);
+                    message.setFrom(fromUser);
+                    sender.send(message);
+                    long size = file.length() / (1024 * 1024);
+                    LOGGER.info(String.format("Sent mail with attachment size %s", size));
+                    if (!file.delete()) {
+                        file.deleteOnExit();
+                    }
                 }
             }
         } catch (Exception exception) {
@@ -82,8 +89,8 @@ public class EmailService {
     }
 
 
-    private File createDocument(Set<Image> images) throws IOException, DocumentException {
-        final File outputFile = File.createTempFile("Squirrel-" + DateTime.now().toLocalTime(), ".pdf");
+    private File createDocument(List<Image> images) throws IOException, DocumentException {
+        final File outputFile = File.createTempFile("NetraNotification-" + DateTime.now().toLocalTime(), ".pdf");
         Document document = new Document();
         PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(outputFile));
         pdfWriter.setFullCompression();
