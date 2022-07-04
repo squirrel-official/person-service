@@ -30,7 +30,7 @@ public class MotionHealthCheckJob {
 
     private boolean isMotionServiceUp() {
         LOGGER.debug("Motion health check job Start");
-        for (int i = 1; i < 4; i++) {
+        for (int i = 1; i < 3; i++) {
             String url = preUrl + i + "/stream/";
             if (!isServerReachable(url)) {
                 return false;
@@ -48,12 +48,10 @@ public class MotionHealthCheckJob {
             if (urlConn.getResponseCode() == 200) {
                 return true;
             } else {
-                LOGGER.error("The  url {} is not available, url");
-                return false;
+                LOGGER.error("The  url {} is not available", url);
             }
         } catch (Exception e) {
-            LOGGER.error("The  url {} is not available, url");
-            LOGGER.error(e);
+            LOGGER.error("The  url {} is not available", url,  e);
         }
         return false;
     }
