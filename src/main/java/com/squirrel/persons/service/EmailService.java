@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -47,12 +48,10 @@ public class EmailService {
 
     @TrackExecutionTime
     public void triggerNotification(String toEmail, String subjectMessage, String detailMessage) throws MessagingException {
-        MimeMessage message = sender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                StandardCharsets.UTF_8.name());
-        helper.setTo(toEmail);
-        helper.setSubject(subjectMessage);
-        helper.setText(detailMessage, true);
+        SimpleMailMessage message=new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject(subjectMessage);
+        message.setText(detailMessage);
         message.setFrom(fromUser);
         sender.send(message);
     }
