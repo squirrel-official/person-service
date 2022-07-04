@@ -19,14 +19,14 @@ import static com.squirrel.persons.Constant.*;
 
 @RestController("/notification")
 @OpenAPIDefinition(info = @Info(
-        title = "Notifications controllerr",
+        title = "Notifications controller",
         version = "1.0"
 ))
 public class NotificationsController {
 
     private static final Logger LOGGER = LogManager.getLogger(NotificationsController.class);
 
-    private static int expirationMinutes= 2;
+    private static final int expirationMinutes= 2;
 
     private DateTime lastNotificationTime;
 
@@ -45,6 +45,7 @@ public class NotificationsController {
     public void sendNotification(@RequestParam MultiValueMap<String, String> params) {
         DateTime now = DateTime.now();
         if(isAfterExpiry(now)) {
+            lastNotificationTime = now;
             String cameraName = params.getFirst("camera-id") != null ? params.getFirst("camera-id") : "General Camera";
             LOGGER.info("received notification from camera : {}", cameraName);
             String subjectMessage = String.format("A notification received from %s", cameraName);
@@ -52,7 +53,7 @@ public class NotificationsController {
                     " If there is any human activity then you will be getting images shortly.";
             try {
                 emailService.triggerNotification(toEmailAddress, subjectMessage, emailMessage);
-                lastNotificationTime = now;
+
             } catch (Exception exception) {
                 LOGGER.error("Trigger notifications failed", exception);
             }
