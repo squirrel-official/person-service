@@ -29,7 +29,6 @@ public class MotionHealthCheckJob {
     }
 
     private boolean isMotionServiceUp() {
-        LOGGER.debug("Motion health check job Start");
         for (int i = 1; i < 3; i++) {
             String url = preUrl + i + "/stream/";
             if (!isServerReachable(url)) {
