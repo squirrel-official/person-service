@@ -1,14 +1,12 @@
 package com.squirrel.persons.controller;
 
-import com.squirrel.persons.service.EmailService;
-import com.squirrel.persons.util.FileUtils;
+import com.squirrel.persons.service.NotificationService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,25 +24,22 @@ public class NotificationsController {
 
     private static final Logger LOGGER = LogManager.getLogger(NotificationsController.class);
 
-    private static final int expirationMinutes= 2;
+    private static final int expirationMinutes = 2;
 
     private DateTime lastNotificationTime;
 
-    @Value("${mail.recipient}")
-    private String toEmailAddress;
-
-    public final EmailService emailService;
+    public final NotificationService notificationService;
 
     @Autowired
-    public NotificationsController(EmailService emailService) {
-        this.emailService = emailService;
+    public NotificationsController(NotificationService notificationService) {
+        this.notificationService = notificationService;
         this.lastNotificationTime = DateTime.now();
     }
 
     @PostMapping("/notification")
     public void sendNotification(@RequestParam MultiValueMap<String, String> params) {
         DateTime now = DateTime.now();
-        if(isAfterExpiry(now)) {
+        if (isAfterExpiry(now)) {
             lastNotificationTime = now;
             String cameraName = params.getFirst("camera-id") != null ? params.getFirst("camera-id") : "General Camera";
             LOGGER.info("received notification from camera : {}", cameraName);
@@ -52,7 +47,7 @@ public class NotificationsController {
             String emailMessage = "you can access the camera feed using link http://my-security.local:7777" +
                     " If there is any human activity then you will be getting images shortly.";
             try {
-                emailService.triggerNotification(toEmailAddress, subjectMessage, emailMessage);
+                notificationService.notification(subjectMessage, emailMessage);
 
             } catch (Exception exception) {
                 LOGGER.error("Trigger notifications failed", exception);
@@ -63,30 +58,18 @@ public class NotificationsController {
     @PostMapping("/visitor")
     public void sendVisitorNotificationWithAttachment() {
         LOGGER.info("received visitor notification ");
-        try {
-            String subjectMessage = "Unknown visitors";
-            String emailMessage = "People who were near your property today";
-            if (emailService.attachImagesAndSendEmail(toEmailAddress, VISITOR_PATH, subjectMessage, emailMessage)) {
-                FileUtils.copyAllFiles(VISITOR_PATH, VISITOR_ARCHIVE_PATH);
-//                FileUtils.deleteImages(VISITOR_ARCHIVE_PATH);
-            }
-        } catch (Exception exception) {
-            LOGGER.error("Trigger notifications failed", exception);
-        }
+        String subjectMessage = "Unknown visitors";
+        String emailMessage = "People who were near your property today";
+        notificationService.notificationWithAttachments(VISITOR_PATH, subjectMessage, emailMessage);
     }
 
     @PostMapping("/criminal")
     public void sendCriminalNotificationWithAttachment() {
         LOGGER.info("received criminal notification ");
-        try {
-            String subjectMessage = "Suspected Person found";
-            String emailMessage = "Following suspected criminal persons were seen near your house";
-            if (emailService.attachImagesAndSendEmail(toEmailAddress, CAPTURED_CRIMINALS, subjectMessage, emailMessage)) {
-                FileUtils.copyAllFiles(CAPTURED_CRIMINALS, ARCHIVES_CAPTURED);
-            }
-        } catch (Exception exception) {
-            LOGGER.error("Trigger notifications failed", exception);
-        }
+        String subjectMessage = "Suspected Person found";
+        String emailMessage = "Following suspected criminal persons were seen near your house";
+        notificationService.notificationWithAttachments(CRIMINALS_PATH, subjectMessage, emailMessage);
+
     }
 
     @PostMapping("/friend")
@@ -94,13 +77,7 @@ public class NotificationsController {
         LOGGER.info("received Friend Notification ");
         String subjectMessage = "Familiar person found";
         String emailMessage = "Attached familiar faces were found near your house";
-        try {
-            if (emailService.attachImagesAndSendEmail(toEmailAddress, VISITOR_PATH, subjectMessage, emailMessage)) {
-                FileUtils.copyAllFiles(VISITOR_PATH, VISITOR_ARCHIVE_PATH);
-            }
-        } catch (Exception exception) {
-            LOGGER.error("Trigger notifications failed", exception);
-        }
+        notificationService.notificationWithAttachments(FRIENDS_PATH, subjectMessage, emailMessage);
     }
 
     private boolean isAfterExpiry(DateTime now) {

@@ -7,6 +7,9 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.squirrel.persons.aspect.TrackExecutionTime;
+import com.squirrel.persons.util.FileUtils;
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -23,31 +26,52 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import static com.squirrel.persons.Constant.*;
+
 @Service
-public class EmailService {
-
-    private JavaMailSender sender;
-    private FileService fileService;
-
-    private static final Logger LOGGER = LogManager.getLogger(EmailService.class);
+public class NotificationService {
 
     @Value("${spring.mail.username}")
     private String fromUser;
-
     @Value("${mail.images.count:50}")
     private int eachEmailImageCount;
+    @Value("${mail.recipient}")
+    private String toEmail;
+    private JavaMailSender sender;
+    private FileService fileService;
+
+    private RetryPolicy<Object> retryPolicy;
+
+    private Map<String, String> archivePathMap;
+
+    private static final Logger LOGGER = LogManager.getLogger(NotificationService.class);
+
 
     @Autowired
-    protected EmailService(JavaMailSender sender, FileService fileService) {
+    protected NotificationService(@Value("${retry.duration:10}") int retryDuration, @Value("${retry.count:3}") int retryCount,
+                                  JavaMailSender sender, FileService fileService) {
         this.sender = sender;
         this.fileService = fileService;
+        this.retryPolicy = RetryPolicy.builder()
+                .handle(Exception.class)
+                .withDelay(Duration.ofSeconds(retryDuration))
+                .withMaxRetries(retryCount)
+                .build();
+
+        this.archivePathMap = Map.of(
+                CRIMINALS_PATH, CRIMINALS_ARCHIVE_PATH,
+                VISITOR_PATH, VISITOR_ARCHIVE_PATH,
+                FRIENDS_PATH,FRIENDS_ARCHIVE_PATH
+        );
     }
 
     @TrackExecutionTime
-    public void triggerNotification(String toEmail, String subjectMessage, String detailMessage) throws MessagingException {
+    public void notification( String subjectMessage, String detailMessage) {
         SimpleMailMessage message=new SimpleMailMessage();
         message.setTo(toEmail);
         message.setSubject(subjectMessage);
@@ -56,11 +80,21 @@ public class EmailService {
         sender.send(message);
     }
 
+    public void notificationWithAttachments(String path, String subject, String message){
+        Boolean success = Failsafe.with(retryPolicy).get(() -> attachImagesAndSendEmail(path, subject, message));
+        if(success) {
+            try {
+                FileUtils.copyAllFiles(path, archivePathMap.get(path));
+            }catch (Exception e){
+                LOGGER.error(e);
+            }
+        }
+    }
+
     @TrackExecutionTime
-    public boolean attachImagesAndSendEmail(String toEmail, String path, String emailMessage, String detailMessage) throws MessagingException, IOException, DocumentException {
+    private boolean attachImagesAndSendEmail(String path, String emailMessage, String detailMessage) throws IOException, DocumentException, MessagingException {
         Set<Image> allFiles = fileService.getListOfAllFiles(path);
         LOGGER.debug(String.format("total files to be attached : %s for %s", allFiles.size(), emailMessage));
-        try {
             for (List<Image> eachImageSet : Iterables.partition(allFiles, eachEmailImageCount)) {
                 if (!eachImageSet.isEmpty()) {
                     File file = createDocument(eachImageSet);
@@ -80,13 +114,9 @@ public class EmailService {
                     }
                 }
             }
-        } catch (Exception exception) {
-            LOGGER.error("An error happened", exception);
-            return false;
-        }
+
         return true;
     }
-
 
     private File createDocument(List<Image> images) throws IOException, DocumentException {
         final File outputFile = File.createTempFile("NetraNotification-" + DateTime.now().toLocalTime(), ".pdf");
@@ -101,5 +131,6 @@ public class EmailService {
         return outputFile;
     }
 
-    ;
+
+
 }
