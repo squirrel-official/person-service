@@ -1,6 +1,5 @@
 package com.squirrel.persons.service;
 
-
 import com.google.common.collect.Iterables;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -119,7 +118,7 @@ public class NotificationService {
     }
 
     private File createDocument(List<Image> images) throws IOException, DocumentException {
-        final File outputFile = File.createTempFile("NetraNotification-" + DateTime.now().toLocalTime(), ".pdf");
+        final File outputFile = File.createTempFile("Netra-" + DateTime.now().toLocalTime(), ".pdf");
         Document document = new Document();
         PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(outputFile));
         pdfWriter.setFullCompression();
