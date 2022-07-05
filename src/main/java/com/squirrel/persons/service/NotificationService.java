@@ -69,7 +69,6 @@ public class NotificationService {
         );
     }
 
-    @TrackExecutionTime
     public void notification( String subjectMessage, String detailMessage) {
         SimpleMailMessage message=new SimpleMailMessage();
         message.setTo(toEmail);
