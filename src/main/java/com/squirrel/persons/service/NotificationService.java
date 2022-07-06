@@ -78,14 +78,11 @@ public class NotificationService {
         sender.send(message);
     }
 
-    public void notificationWithAttachments(String path, String subject, String message, boolean suspendedNotifications) {
-        if (suspendedNotifications) {
-            archiveImages(path);
-        }else{
+    public void notificationWithAttachments(String path, String subject, String message) {
             if (Failsafe.with(retryPolicy).get(() -> attachImagesAndSendEmail(path, subject, message))) {
                 archiveImages(path);
             }
-        }
+
     }
 
     @TrackExecutionTime
@@ -128,7 +125,7 @@ public class NotificationService {
         return outputFile;
     }
 
-    private void archiveImages(String path) {
+    public void archiveImages(String path) {
         try {
             FileUtils.copyAllFiles(path, archivePathMap.get(path));
         } catch (Exception e) {
