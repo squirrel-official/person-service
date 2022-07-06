@@ -78,13 +78,12 @@ public class NotificationService {
         sender.send(message);
     }
 
-    public void notificationWithAttachments(String path, String subject, String message){
-        Boolean success = Failsafe.with(retryPolicy).get(() -> attachImagesAndSendEmail(path, subject, message));
-        if(success) {
-            try {
-                FileUtils.copyAllFiles(path, archivePathMap.get(path));
-            }catch (Exception e){
-                LOGGER.error(e);
+    public void notificationWithAttachments(String path, String subject, String message, boolean suspendedNotifications) {
+        if (suspendedNotifications) {
+            archiveImages(path);
+        }else{
+            if (Failsafe.with(retryPolicy).get(() -> attachImagesAndSendEmail(path, subject, message))) {
+                archiveImages(path);
             }
         }
     }
@@ -127,6 +126,14 @@ public class NotificationService {
         }
         document.close();
         return outputFile;
+    }
+
+    private void archiveImages(String path) {
+        try {
+            FileUtils.copyAllFiles(path, archivePathMap.get(path));
+        } catch (Exception e) {
+            LOGGER.error(e);
+        }
     }
 
 
