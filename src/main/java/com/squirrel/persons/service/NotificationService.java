@@ -92,7 +92,7 @@ public class NotificationService {
     @TrackExecutionTime
     private boolean attachImagesAndSendEmail(String path, String emailMessage, String detailMessage) throws IOException, DocumentException, MessagingException {
         Set<Image> allFiles = fileService.getListOfAllFiles(path);
-        LOGGER.debug(String.format("total files to be attached : %s for %s", allFiles.size(), emailMessage));
+        LOGGER.debug(String.format("total files to be attached : %s and files are %s ", allFiles.size(), allFiles));
             for (List<Image> eachImageSet : Iterables.partition(allFiles, eachEmailImageCount)) {
                 if (!eachImageSet.isEmpty()) {
                     File file = createDocument(eachImageSet);

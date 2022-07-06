@@ -3,7 +3,6 @@ package com.squirrel.persons.service;
 import com.itextpdf.text.Image;
 import com.squirrel.persons.util.FileUtils;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,6 +22,7 @@ public class FileService {
                 .filter(Files::isRegularFile)
                 .filter(FileUtils::imageCheck)
                 .filter(FileUtils::checkNotHidden)
+                .sorted()
                 .map(FileService::formatImages).filter(Objects::nonNull).collect(Collectors.toSet());
         return images;
     }
