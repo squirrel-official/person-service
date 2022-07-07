@@ -23,8 +23,6 @@ public class NotificationsController {
 
     private static final Logger LOGGER = LogManager.getLogger(NotificationsController.class);
 
-    private static final int expirationMinutes = 2;
-
     private DateTime suspendedNotificationsEndTime;
 
     public final NotificationService notificationService;
@@ -74,7 +72,7 @@ public class NotificationsController {
             String emailMessage = "People who were near your property today";
             notificationService.notificationWithAttachments(VISITOR_PATH, subjectMessage, emailMessage);
         } else {
-            LOGGER.info("received visitor notification during cool down period ");
+            LOGGER.info("received visitor notification during cool down period {}", suspendedNotificationsEndTime );
             notificationService.archiveImages(VISITOR_PATH);
         }
     }
