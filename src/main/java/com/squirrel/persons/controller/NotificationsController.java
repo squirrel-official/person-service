@@ -25,35 +25,34 @@ public class NotificationsController {
 
     private static final int expirationMinutes = 2;
 
-    private DateTime lastNotificationTime;
+    private DateTime suspendedNotificationsEndTime;
 
     public final NotificationService notificationService;
 
     @Autowired
     public NotificationsController(NotificationService notificationService) {
         this.notificationService = notificationService;
-        this.lastNotificationTime = DateTime.now();
+        this.suspendedNotificationsEndTime = DateTime.now();
     }
 
     @PostMapping("/pause")
     public void pauseAllNotifications(@RequestParam("duration") int duration) {
         LOGGER.info("Pausing notifications for {} minutes", duration);
-        lastNotificationTime = DateTime.now().plusMinutes(duration);
+        suspendedNotificationsEndTime = DateTime.now().plusMinutes(duration);
         notificationService.notification("Notifications Suspended", String.format("Notification system is inactive for next %s minutes", duration));
     }
 
     @PostMapping("/resume-now")
     public void resumeNotification() {
         LOGGER.info("resuming all notifications ");
-        lastNotificationTime = DateTime.now().minusMinutes(expirationMinutes);
+        suspendedNotificationsEndTime = DateTime.now();
         notificationService.notification("Notifications", "Notification system is active now");
     }
 
     @PostMapping("/notification")
     public void sendNotification(@RequestParam("camera-id") String cameraId) {
-        DateTime now = DateTime.now();
-        if (isCoolDownExpired(now)) {
-            lastNotificationTime = now;
+
+        if (isCoolDownExpired()) {
             String cameraName = cameraId != null ? cameraId : "General Camera";
             LOGGER.info("received notification from camera : {}", cameraName);
             String subjectMessage = String.format("A notification received from %s", cameraName);
@@ -69,7 +68,7 @@ public class NotificationsController {
 
     @PostMapping("/visitor")
     public void sendVisitorNotificationWithAttachment() {
-        if (isCoolDownExpired(DateTime.now())) {
+        if (isCoolDownExpired()) {
             LOGGER.info("received visitor notification ");
             String subjectMessage = "Unknown visitors";
             String emailMessage = "People who were near your property today";
@@ -97,7 +96,7 @@ public class NotificationsController {
         notificationService.notificationWithAttachments(FRIENDS_PATH, subjectMessage, emailMessage);
     }
 
-    private boolean isCoolDownExpired(DateTime now) {
-        return now.minusMinutes(expirationMinutes).isAfter(lastNotificationTime);
+    private boolean isCoolDownExpired() {
+        return suspendedNotificationsEndTime.isAfter(DateTime.now());
     }
 }
