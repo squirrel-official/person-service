@@ -95,6 +95,6 @@ public class NotificationsController {
     }
 
     private boolean isCoolDownExpired() {
-        return suspendedNotificationsEndTime.isAfter(DateTime.now());
+        return suspendedNotificationsEndTime.isBefore(DateTime.now());
     }
 }
