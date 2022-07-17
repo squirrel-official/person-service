@@ -33,6 +33,7 @@ public class NotificationsController {
     public NotificationsController(NotificationService notificationService) {
         this.notificationService = notificationService;
         this.suspendedNotificationsEndTime = DateTime.now();
+        this.visitorNotificationsEndTime = DateTime.now();
     }
 
     @PostMapping("/pause")
