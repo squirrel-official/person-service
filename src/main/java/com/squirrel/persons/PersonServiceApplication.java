@@ -21,7 +21,7 @@ public class PersonServiceApplication {
     public CommandLineRunner CommandLineRunnerBean() {
         return (args) -> {
             Process process = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/detection.sh");
-            LOGGER.debug("detection process started {}", process);
+            LOGGER.info("detection process started {}", process);
         };
     }
 }

@@ -25,6 +25,8 @@ public class NotificationsController {
 
     private DateTime suspendedNotificationsEndTime;
 
+    private DateTime visitorNotificationsEndTime;
+
     public final NotificationService notificationService;
 
     @Autowired
@@ -34,9 +36,10 @@ public class NotificationsController {
     }
 
     @PostMapping("/pause")
-    public void pauseAllNotifications(@RequestParam("duration") int duration) {
+    public void pauseAllNotifications(@RequestParam("duration") int duration, @RequestParam("visitor-notification-duration") int visitorDuration) {
         LOGGER.info("Pausing notifications for {} minutes", duration);
         suspendedNotificationsEndTime = DateTime.now().plusMinutes(duration);
+        this.visitorNotificationsEndTime = DateTime.now().plusMinutes(visitorDuration);
         notificationService.notification("Notifications Suspended", String.format("Notification system is inactive for next %s minutes", duration));
     }
 
@@ -44,6 +47,7 @@ public class NotificationsController {
     public void resumeNotification() {
         LOGGER.info("resuming all notifications ");
         suspendedNotificationsEndTime = DateTime.now();
+        visitorNotificationsEndTime = DateTime.now();
         notificationService.notification("Notifications", "Notification system is active now");
     }
 
@@ -66,7 +70,7 @@ public class NotificationsController {
 
     @PostMapping("/visitor")
     public void sendVisitorNotificationWithAttachment() {
-        if (isCoolDownExpired()) {
+        if (isVisitorCoolDownExpired()) {
             LOGGER.info("received visitor notification ");
             String subjectMessage = "Unknown visitors";
             String emailMessage = "People who were near your property today";
@@ -96,5 +100,8 @@ public class NotificationsController {
 
     private boolean isCoolDownExpired() {
         return suspendedNotificationsEndTime.isBefore(DateTime.now());
+    }
+    private boolean isVisitorCoolDownExpired() {
+        return visitorNotificationsEndTime.isBefore(DateTime.now());
     }
 }
