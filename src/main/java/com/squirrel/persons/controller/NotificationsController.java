@@ -56,7 +56,7 @@ public class NotificationsController {
         notificationService.notification("Notifications", "Notification system is active now");
     }
 
-    @PostMapping("/notification")
+    @PostMapping("/notify")
     public void sendNotification(@RequestParam("camera-id") String cameraId) {
 
         if (isCoolDownExpired()) {
@@ -73,7 +73,7 @@ public class NotificationsController {
         }
     }
 
-    @PostMapping("/notification")
+    @PostMapping("/attach-notify")
     public void sendNotificationWithImage(@RequestParam("camera-id") String cameraId,
                                           @RequestParam("imageFile") MultipartFile multipartFile) {
         if (isCoolDownExpired()) {
