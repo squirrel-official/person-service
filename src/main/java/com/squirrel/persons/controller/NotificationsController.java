@@ -10,7 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+
+import java.io.File;
+import java.io.IOException;
 
 import static com.squirrel.persons.Constant.*;
 
@@ -69,6 +73,26 @@ public class NotificationsController {
         }
     }
 
+    @PostMapping("/notification")
+    public void sendNotificationWithImage(@RequestParam("camera-id") String cameraId,
+                                          @RequestParam("imageFile") MultipartFile multipartFile) {
+        if (isCoolDownExpired()) {
+            String cameraName = cameraId != null ? cameraId : "General Camera";
+            LOGGER.info("received notification from camera : {}", cameraName);
+            String subjectMessage = String.format("A notification received from %s", cameraName);
+            String emailMessage = "you can access the camera feed using link http://my-security.local:7777" +
+                    ". If there is any human activity then you will be getting images shortly.";
+            File file = convertMultipartToFile(multipartFile);
+            try {
+                notificationService.notificationWithAttachment(subjectMessage, emailMessage, file);
+            } catch (Exception exception) {
+                LOGGER.error("Trigger notifications failed", exception);
+            } finally {
+                file.deleteOnExit();
+            }
+        }
+    }
+
     @PostMapping("/visitor")
     public void sendVisitorNotificationWithAttachment() {
         if (isVisitorCoolDownExpired()) {
@@ -77,7 +101,7 @@ public class NotificationsController {
             String emailMessage = "People who were near your property today";
             notificationService.notificationWithAttachments(VISITOR_PATH, subjectMessage, emailMessage);
         } else {
-            LOGGER.info("received visitor notification during cool down period {}", suspendedNotificationsEndTime );
+            LOGGER.info("received visitor notification during cool down period {}", suspendedNotificationsEndTime);
             notificationService.archiveImages(VISITOR_PATH);
         }
     }
@@ -102,7 +126,19 @@ public class NotificationsController {
     private boolean isCoolDownExpired() {
         return suspendedNotificationsEndTime.isBefore(DateTime.now());
     }
+
     private boolean isVisitorCoolDownExpired() {
         return visitorNotificationsEndTime.isBefore(DateTime.now());
+    }
+
+    private File convertMultipartToFile(MultipartFile multipartFile) {
+        File outputFile = null;
+        try {
+            outputFile = File.createTempFile("Detection-" + DateTime.now().toLocalTime(), ".jpg");
+            multipartFile.transferTo(outputFile);
+        } catch (Exception exception) {
+            LOGGER.error("Unable to  convert multipart  to file");
+        }
+        return outputFile;
     }
 }
