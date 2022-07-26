@@ -17,8 +17,10 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Base64;
 
 import static com.squirrel.persons.Constant.*;
 
@@ -77,18 +79,19 @@ public class NotificationsController {
         }
     }
 
-    @PostMapping(value = "/attach-notify", consumes = MediaType.IMAGE_JPEG_VALUE)
+    @PostMapping(value = "/attach-notify")
     public void sendNotificationWithImage(@RequestParam("camera-id") String cameraId,
-                                          @RequestParam("image") CommonsMultipartFile multipartFile) throws IOException {
+                                          @RequestParam("image") String imageBase64) throws IOException {
         if (isCoolDownExpired()) {
             String cameraName = cameraId != null ? cameraId : "General Camera";
             LOGGER.info("received notification from camera : {}", cameraName);
             String subjectMessage = String.format("A notification received from %s", cameraName);
             String emailMessage = "you can access the camera feed using link http://my-security.local:7777";
-            File file = convertMultipartToFile(multipartFile);
+            byte[] imageData = Base64.getDecoder().decode(imageBase64);
+            BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageData));
+            File file = new File("/usr/local/squirrel-ai/test.jpg");
+            ImageIO.write(img, "png", file);
             try {
-                BufferedImage image = ImageIO.read(file);
-                multipartFile.transferTo(new File("/usr/local/squirrel-ai/test.jpg"));
                 notificationService.notificationWithAttachment(subjectMessage, emailMessage, file);
             } catch (Exception exception) {
                 LOGGER.error("Trigger notifications failed", exception);
