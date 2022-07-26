@@ -19,8 +19,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -80,7 +82,7 @@ public class NotificationService {
 
 
     public void notificationWithAttachment(String subject,String message, File file) {
-       Failsafe.with(retryPolicy).run(() -> attachFileAndSendEmail(subject, message, file));
+       Failsafe.with(retryPolicy).run(() -> attachImageAndSendEmail(subject, message, file));
     }
 
     public void notificationWithAttachments(String path, String subject, String message) {
@@ -91,7 +93,21 @@ public class NotificationService {
     }
 
     @TrackExecutionTime
-    public void attachFileAndSendEmail(String emailMessage, String detailMessage, File file) throws MessagingException {
+    public void attachImageAndSendEmail(String emailMessage, String detailMessage, File file) throws MessagingException, IOException {
+        MimeMessage message = sender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                StandardCharsets.UTF_8.name());
+        helper.setTo(toEmail);
+        helper.setSubject(emailMessage);
+        helper.setText(detailMessage, true);
+        BufferedImage image = ImageIO.read(file);
+        message.setFrom(fromUser);
+        sender.send(message);
+        long size = file.length() / (1024 * 1024);
+        LOGGER.info(String.format("Sent mail with attachment size %s", size));
+    }
+
+    private void attachFileAndSendEmail(String emailMessage, String detailMessage, File file) throws MessagingException {
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());

@@ -7,13 +7,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 import static com.squirrel.persons.Constant.*;
 
@@ -72,17 +77,18 @@ public class NotificationsController {
         }
     }
 
-    @PostMapping("/attach-notify")
+    @PostMapping(value = "/attach-notify", consumes = MediaType.IMAGE_JPEG_VALUE)
     public void sendNotificationWithImage(@RequestParam("camera-id") String cameraId,
-                                          @RequestParam("file") MultipartFile multipartFile) {
+                                          @RequestParam("image") CommonsMultipartFile multipartFile) throws IOException {
         if (isCoolDownExpired()) {
             String cameraName = cameraId != null ? cameraId : "General Camera";
             LOGGER.info("received notification from camera : {}", cameraName);
             String subjectMessage = String.format("A notification received from %s", cameraName);
-            String emailMessage = "you can access the camera feed using link http://my-security.local:7777" +
-                    ". If there is any human activity then you will be getting images shortly.";
+            String emailMessage = "you can access the camera feed using link http://my-security.local:7777";
             File file = convertMultipartToFile(multipartFile);
             try {
+                BufferedImage image = ImageIO.read(file);
+                multipartFile.transferTo(new File("/usr/local/squirrel-ai/test.jpg"));
                 notificationService.notificationWithAttachment(subjectMessage, emailMessage, file);
             } catch (Exception exception) {
                 LOGGER.error("Trigger notifications failed", exception);
@@ -133,8 +139,9 @@ public class NotificationsController {
     private File convertMultipartToFile(MultipartFile multipartFile) {
         File outputFile = null;
         try {
-            outputFile = File.createTempFile("Detection-" + DateTime.now().toLocalTime(), ".jpg");
+            outputFile = File.createTempFile("Detection-" + DateTime.now().toLocalTime(), ".JPEG");
             multipartFile.transferTo(outputFile);
+
         } catch (Exception exception) {
             LOGGER.error("Unable to  convert multipart  to file");
         }
