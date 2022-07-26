@@ -74,7 +74,7 @@ public class NotificationsController {
 
     @PostMapping("/attach-notify")
     public void sendNotificationWithImage(@RequestParam("camera-id") String cameraId,
-                                          @RequestParam("file") MultipartFile multipartFile) {
+                                          @RequestParam("image") MultipartFile multipartFile) {
         if (isCoolDownExpired()) {
             String cameraName = cameraId != null ? cameraId : "General Camera";
             LOGGER.info("received notification from camera : {}", cameraName);
