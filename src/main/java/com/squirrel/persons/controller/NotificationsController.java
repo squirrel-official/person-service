@@ -81,16 +81,16 @@ public class NotificationsController {
 
     @PostMapping(value = "/attach-notify")
     public void sendNotificationWithImage(@RequestParam("camera-id") String cameraId,
-                                          @RequestParam("image") String imageBase64) throws IOException {
+                                          @RequestParam("image") MultipartFile imageMultiPart) throws IOException {
         if (isCoolDownExpired()) {
             String cameraName = cameraId != null ? cameraId : "General Camera";
             LOGGER.info("received notification from camera : {}", cameraName);
             String subjectMessage = String.format("A notification received from %s", cameraName);
             String emailMessage = "you can access the camera feed using link http://my-security.local:7777";
-            byte[] imageData = Base64.getDecoder().decode(imageBase64);
+            byte[] imageData = Base64.getDecoder().decode(new String(imageMultiPart.getBytes()));
             BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageData));
-            File file = new File("/usr/local/squirrel-ai/test.jpg");
-            ImageIO.write(img, "png", file);
+            final File file = File.createTempFile("Netra" , ".jpg");
+            ImageIO.write(img, "jpg", file);
             try {
                 notificationService.notificationWithAttachment(subjectMessage, emailMessage, file);
             } catch (Exception exception) {

@@ -100,7 +100,7 @@ public class NotificationService {
         helper.setTo(toEmail);
         helper.setSubject(emailMessage);
         helper.setText(detailMessage, true);
-        BufferedImage image = ImageIO.read(file);
+        helper.addInline(file.getName(), file);
         message.setFrom(fromUser);
         sender.send(message);
         long size = file.length() / (1024 * 1024);
