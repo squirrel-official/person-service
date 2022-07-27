@@ -7,20 +7,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.util.Base64;
 
 import static com.squirrel.persons.Constant.*;
 
@@ -79,32 +71,10 @@ public class NotificationsController {
         }
     }
 
-    @PostMapping(value = "/attach-notify")
-    public void sendNotificationWithImage(@RequestParam("camera-id") String cameraId,
-                                          @RequestParam("image") MultipartFile imageMultiPart) throws IOException {
-        if (isCoolDownExpired()) {
-            String cameraName = cameraId != null ? cameraId : "General Camera";
-            LOGGER.info("received notification from camera : {}", cameraName);
-            String subjectMessage = String.format("A notification received from %s", cameraName);
-            String emailMessage = "you can access the camera feed using link http://my-security.local:7777";
-            byte[] imageData = Base64.getDecoder().decode(new String(imageMultiPart.getBytes()));
-            BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageData));
-            final File file = File.createTempFile("Netra" , ".jpg");
-            ImageIO.write(img, "jpg", file);
-            try {
-                notificationService.notificationWithAttachment(subjectMessage, emailMessage, file);
-            } catch (Exception exception) {
-                LOGGER.error("Trigger notifications failed", exception);
-            } finally {
-                file.deleteOnExit();
-            }
-        }
-    }
-
     @PostMapping("/visitor")
     public void sendVisitorNotificationWithAttachment() {
         if (isVisitorCoolDownExpired()) {
-            LOGGER.info("received visitor notification ");
+            LOGGER.info("Received visitor notification ");
             String subjectMessage = "Unknown visitors";
             String emailMessage = "People who were near your property today";
             notificationService.notificationWithAttachments(VISITOR_PATH, subjectMessage, emailMessage);
