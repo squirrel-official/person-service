@@ -1,5 +1,6 @@
 package com.squirrel.persons.job;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class MotionHealthCheckJob {
@@ -22,6 +24,9 @@ public class MotionHealthCheckJob {
                 Runtime.getRuntime().exec(motionRestartCommand);
                 Process process = Runtime.getRuntime().exec(motionRestartCommand);
                 LOGGER.info("Motion software restarted {}", process);
+                Uninterruptibles.sleepUninterruptibly(1, TimeUnit.MINUTES);
+                Process detectionProcess = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/detection.sh");
+                LOGGER.info("detection process started {}", detectionProcess);
             } catch (Exception e) {
                 LOGGER.error("An error happened", e);
             }

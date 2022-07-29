@@ -11,17 +11,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 public class PersonServiceApplication {
-    private static final Logger LOGGER = LogManager.getLogger(PersonServiceApplication.class);
-
     public static void main(String[] args) {
         SpringApplication.run(PersonServiceApplication.class, args);
     }
 
-    @Bean
-    public CommandLineRunner CommandLineRunnerBean() {
-        return (args) -> {
-            Process process = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/detection.sh");
-            LOGGER.info("detection process started {}", process);
-        };
-    }
 }
