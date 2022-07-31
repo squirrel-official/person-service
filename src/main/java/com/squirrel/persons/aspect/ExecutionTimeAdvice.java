@@ -19,7 +19,7 @@ public class ExecutionTimeAdvice {
         long startTime = System.currentTimeMillis();
         Object object = point.proceed();
         long endTime = System.currentTimeMillis();
-        LOGGER.debug("Class Name: "+ point.getSignature().getDeclaringTypeName() +". Method Name: "+ point.getSignature().getName() + ". Time taken for Execution is : " + (endTime-startTime) +"ms");
+        LOGGER.info("Class Name: "+ point.getSignature().getDeclaringTypeName() +". Method Name: "+ point.getSignature().getName() + ". Time taken for Execution is : " + (endTime-startTime) +"ms");
         return object;
     }
 }
