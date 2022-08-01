@@ -80,7 +80,6 @@ public class NotificationService {
         sender.send(message);
     }
 
-
     public void notificationWithAttachment(String subject,String message, File file) {
        Failsafe.with(retryPolicy).run(() -> attachImageAndSendEmail(subject, message, file));
     }
@@ -89,9 +88,7 @@ public class NotificationService {
             if (Failsafe.with(retryPolicy).get(() -> attachFileAndSendEmail(path, subject, message))) {
                 archiveImages(path);
             }
-
     }
-
     @TrackExecutionTime
     public void attachImageAndSendEmail(String emailMessage, String detailMessage, File file) throws MessagingException, IOException {
         MimeMessage message = sender.createMimeMessage();
@@ -118,7 +115,7 @@ public class NotificationService {
         message.setFrom(fromUser);
         sender.send(message);
         long size = file.length() / (1024 * 1024);
-        LOGGER.info(String.format("Sent mail with attachment size %s", size));
+        LOGGER.info(String.format("Sent mail with attachment size %s mb", size));
     }
 
     @TrackExecutionTime
@@ -134,7 +131,6 @@ public class NotificationService {
                     }
                 }
             }
-
         return true;
     }
 
