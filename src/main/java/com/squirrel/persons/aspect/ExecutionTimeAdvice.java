@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class ExecutionTimeAdvice {
     private static final Logger LOGGER = LogManager.getLogger(ExecutionTimeAdvice.class);
 
-    @Around("@annotation(com.squirrel.persons.aspect.TrackExecutionTime)")
+    @Around("@annotation(com.squirrel.persons.*)")
     public Object executionTime(ProceedingJoinPoint point) throws Throwable {
         long startTime = System.currentTimeMillis();
         Object object = point.proceed();
