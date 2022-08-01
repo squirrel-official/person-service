@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-@Slf4j
 public class ExecutionTimeAdvice {
     private static final Logger LOGGER = LogManager.getLogger(ExecutionTimeAdvice.class);
 
