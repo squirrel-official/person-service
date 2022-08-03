@@ -83,7 +83,7 @@ public class NotificationService {
     public void notificationWithAttachment(String subject,String message, File file) {
        Failsafe.with(retryPolicy).run(() -> attachImageAndSendEmail(subject, message, file));
     }
-
+    @TrackExecutionTime
     public void notificationWithAttachments(String path, String subject, String message) {
             if (Failsafe.with(retryPolicy).get(() -> attachFileAndSendEmail(path, subject, message))) {
                 archiveImages(path);
@@ -118,7 +118,7 @@ public class NotificationService {
         LOGGER.info(String.format("Sent mail with attachment size %s mb", size));
     }
 
-    @TrackExecutionTime
+
     private boolean attachFileAndSendEmail(String path, String emailMessage, String detailMessage) throws IOException, DocumentException, MessagingException {
         Set<Image> allFiles = fileService.getListOfAllFiles(path);
         LOGGER.debug(String.format("total files to be attached : %s and files are %s ", allFiles.size(), allFiles));
