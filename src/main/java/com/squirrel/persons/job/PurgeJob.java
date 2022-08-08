@@ -28,7 +28,8 @@ public class PurgeJob {
         fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/data/archives/captured-criminals", 1);
         fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/data/archives/unknown-visitors", 1);
         fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/data/archives/known-visitors", 1);
-        fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/data/archives/", 4);
+        fileService.purgeFilesOlderThanNDays("/var/lib/motion", 10);
+        fileService.purgeFilesOlderThanNDays("/usr/local/squirrel-ai/data/archives/", 10);
         LOGGER.info("Purge job complete");
     }
 
