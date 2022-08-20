@@ -8,7 +8,12 @@ import org.springframework.stereotype.Component;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Component
 public class MotionHealthCheckJob {
@@ -25,8 +30,15 @@ public class MotionHealthCheckJob {
                 Process process = Runtime.getRuntime().exec(motionRestartCommand);
                 LOGGER.info("Motion software restarted {}", process);
                 Uninterruptibles.sleepUninterruptibly(1, TimeUnit.MINUTES);
+            } catch (Exception e) {
+                LOGGER.error("An error happened", e);
+            }
+        }
+        if (isAIServiceDown()) {
+            try {
                 Process detectionProcess = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/detection.sh");
                 LOGGER.info("detection process started {}", detectionProcess);
+                Uninterruptibles.sleepUninterruptibly(1, TimeUnit.MINUTES);
             } catch (Exception e) {
                 LOGGER.error("An error happened", e);
             }
@@ -41,6 +53,25 @@ public class MotionHealthCheckJob {
             }
         }
         return true;
+    }
+
+    private  boolean isAIServiceDown(){
+
+        List<String> list = ProcessHandle.allProcesses()
+                .map(p -> Arrays.stream(unwrap(p.info().arguments()))
+                        .filter(
+                                a -> a.contains("/usr/local/squirrel-ai/service/motionDetection.py"))
+                        .collect(Collectors.toList()))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        return  list.isEmpty();
+    }
+    private  String[] unwrap(Optional<String[]> optional){
+        if(optional.isPresent()){
+            return optional.get();
+        }else {
+            return new String[0];
+        }
     }
 
     public boolean isServerReachable(String url) {
