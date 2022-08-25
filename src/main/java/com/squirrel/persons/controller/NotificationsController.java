@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 
 import static com.squirrel.persons.Constant.*;
 
@@ -108,16 +106,6 @@ public class NotificationsController {
     private boolean isVisitorCoolDownExpired() {
         return visitorNotificationsEndTime.isBefore(DateTime.now());
     }
-
-    private File convertMultipartToFile(MultipartFile multipartFile) {
-        File outputFile = null;
-        try {
-            outputFile = File.createTempFile("Detection-" + DateTime.now().toLocalTime(), ".JPEG");
-            multipartFile.transferTo(outputFile);
-
-        } catch (Exception exception) {
-            LOGGER.error("Unable to  convert multipart  to file");
-        }
-        return outputFile;
-    }
 }
+
+
