@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class MotionHealthCheckJob {
-    String preUrl = "http://my-security.local:7776/";
-    String motionRestartCommand = "sh /usr/local/person-service/src/main/resources/motion-restart.sh";
     private static final Logger LOGGER = LogManager.getLogger(com.squirrel.persons.job.MotionHealthCheckJob.class);
 
     @Scheduled(fixedDelay = 180000)
