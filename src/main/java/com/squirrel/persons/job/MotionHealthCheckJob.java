@@ -46,7 +46,7 @@ public class MotionHealthCheckJob {
     }
 
     private boolean isMotionServiceUp() {
-        for (int i = 1; i < 3; i++) {
+        for (int i = 1; i < 2; i++) {
             String url = preUrl + i + "/stream/";
             if (!isServerReachable(url)) {
                 return false;
