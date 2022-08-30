@@ -5,7 +5,6 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.squirrel.persons.aspect.TrackExecutionTime;
 import com.squirrel.persons.util.FileUtils;
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
@@ -19,10 +18,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -83,13 +80,11 @@ public class NotificationService {
     public void notificationWithAttachment(String subject,String message, File file) {
        Failsafe.with(retryPolicy).run(() -> attachImageAndSendEmail(subject, message, file));
     }
-    @TrackExecutionTime
     public void notificationWithAttachments(String path, String subject, String message) {
             if (Failsafe.with(retryPolicy).get(() -> attachFileAndSendEmail(path, subject, message))) {
                 archiveImages(path);
             }
     }
-    @TrackExecutionTime
     public void attachImageAndSendEmail(String emailMessage, String detailMessage, File file) throws MessagingException, IOException {
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
