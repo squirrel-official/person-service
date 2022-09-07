@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class MotionHealthCheckJob {
     private static final Logger LOGGER = LogManager.getLogger(com.squirrel.persons.job.MotionHealthCheckJob.class);
 
-    @Scheduled(fixedDelay = 180000)
+    @Scheduled(fixedDelay = 300000)
     public void triggerJob() {
         List<String> list = ProcessHandle.allProcesses()
                 .map(p -> Arrays.stream(unwrap(p.info().arguments()))
@@ -29,19 +29,20 @@ public class MotionHealthCheckJob {
 
         if (list.size() < 2) {
             try {
-                logProccesses(list);
+                logProcesses(list);
                 Process detectionProcess = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/detection.sh");
                 LOGGER.info("detection process started {}", detectionProcess);
-                Uninterruptibles.sleepUninterruptibly(1, TimeUnit.MINUTES);
+                Uninterruptibles.sleepUninterruptibly(2, TimeUnit.MINUTES);
             } catch (Exception e) {
                 LOGGER.error("An error happened", e);
             }
         }else if(list.size() > 2){
-            logProccesses(list);
+            logProcesses(list);
         }
     }
 
-    private void logProccesses(List<String> list) {
+    private void logProcesses(List<String> list) {
+        LOGGER.warn("Process size : "+list.size());
         for(String each: list) {
             LOGGER.warn("Processes : "+each);
         }
