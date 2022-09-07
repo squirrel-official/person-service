@@ -37,7 +37,7 @@ public class MotionHealthCheckJob {
             }
         }else if(list.size() > 2){
             for(String each: list) {
-                LOGGER.warn("Processes :"+each);
+                LOGGER.warn("Processes : "+each);
             }
         }
     }
