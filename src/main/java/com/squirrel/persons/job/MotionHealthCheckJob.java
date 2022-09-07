@@ -29,6 +29,7 @@ public class MotionHealthCheckJob {
 
         if (list.size() < 2) {
             try {
+                logProccesses(list);
                 Process detectionProcess = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/detection.sh");
                 LOGGER.info("detection process started {}", detectionProcess);
                 Uninterruptibles.sleepUninterruptibly(1, TimeUnit.MINUTES);
@@ -36,9 +37,13 @@ public class MotionHealthCheckJob {
                 LOGGER.error("An error happened", e);
             }
         }else if(list.size() > 2){
-            for(String each: list) {
-                LOGGER.warn("Processes : "+each);
-            }
+            logProccesses(list);
+        }
+    }
+
+    private void logProccesses(List<String> list) {
+        for(String each: list) {
+            LOGGER.warn("Processes : "+each);
         }
     }
 
