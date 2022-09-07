@@ -19,19 +19,6 @@ public class MotionHealthCheckJob {
 
     @Scheduled(fixedDelay = 180000)
     public void triggerJob() {
-        if (isAIServiceDown()) {
-            try {
-                Process detectionProcess = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/detection.sh");
-                LOGGER.info("detection process started {}", detectionProcess);
-                Uninterruptibles.sleepUninterruptibly(1, TimeUnit.MINUTES);
-            } catch (Exception e) {
-                LOGGER.error("An error happened", e);
-            }
-        }
-    }
-
-    private  boolean isAIServiceDown(){
-
         List<String> list = ProcessHandle.allProcesses()
                 .map(p -> Arrays.stream(unwrap(p.info().arguments()))
                         .filter(
@@ -39,8 +26,22 @@ public class MotionHealthCheckJob {
                         .collect(Collectors.toList()))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        return  list.isEmpty();
+
+        if (list.size() < 2) {
+            try {
+                Process detectionProcess = Runtime.getRuntime().exec("sh /usr/local/person-service/src/main/resources/detection.sh");
+                LOGGER.info("detection process started {}", detectionProcess);
+                Uninterruptibles.sleepUninterruptibly(1, TimeUnit.MINUTES);
+            } catch (Exception e) {
+                LOGGER.error("An error happened", e);
+            }
+        }else if(list.size() > 2){
+            for(String each: list) {
+                LOGGER.warn("Processes :"+each);
+            }
+        }
     }
+
     private  String[] unwrap(Optional<String[]> optional){
         if(optional.isPresent()){
             return optional.get();
