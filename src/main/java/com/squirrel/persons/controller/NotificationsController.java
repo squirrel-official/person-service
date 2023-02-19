@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 
-import static com.squirrel.persons.Constant.*;
+import static com.squirrel.persons.constant.Constant.*;
 
 @RestController("/notification")
 @OpenAPIDefinition(info = @Info(

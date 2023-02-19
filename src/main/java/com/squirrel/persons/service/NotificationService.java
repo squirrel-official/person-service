@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.squirrel.persons.Constant.*;
+import static com.squirrel.persons.constant.Constant.*;
 
 @Service
 public class NotificationService {
